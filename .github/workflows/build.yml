@@ -34,7 +34,7 @@ jobs:
         run: |
           sudo apt-get install -y \
             qt6-base-dev qt6-tools-dev qt6-tools-dev-tools \
-            libgl1-mesa-dev qt6-l10n-tools
+            libgl1-mesa-dev qt6-l10n-tools libxkbcommon-dev
 
       - name: Configure CMake
         run: |
