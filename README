@@ -15,7 +15,7 @@ This version addresses deep technical debt to ensure long-term stability:
 - **Qt6 & Wayland Support**: Fully ported from Qt4/5 to Qt6. Removed `QtX11Extras` to allow the GUI to run natively on Wayland.
 - **Modern OpenGL (3.0+)**: Rewrote the 3D Tracking View using a programmable shader-based pipeline (GLES 3.0), replacing the broken 20-year-old fixed-function legacy code.
 - **Bison/Flex Removal**: Replaced complex legacy configuration parsers with the lightweight, robust `mINI` library.
-- **TrackIR 5 V3 Support**: Full hardware activation for the latest TrackIR 5 revisions (using optimized 0x1A/0x1B initialization packets).
+- **TrackIR 5 V3 Support**: Full hardware activation for the latest TrackIR 5 revisions
 
 ## 🎮 Verified Games & Apps
 
