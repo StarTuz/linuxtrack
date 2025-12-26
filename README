@@ -48,9 +48,9 @@ Current progress is tracked in [MODERNIZATION_ROADMAP.md](MODERNIZATION_ROADMAP.
 - [x] Modern OpenGL Shader-based 3D View.
 - [x] Bison/Flex to mINI migration.
 - [x] Surgical Wine/Proton Bridge Injection.
+- [x] Automatic Steam/Proton Prefix Discovery.
 
 **Upcoming:**
-- [ ] Automatic Steam/Proton Prefix Discovery.
 - [ ] Native UI for model scaling/offsets.
 - [ ] C++11/14 Modernization
 - [ ] CMake Migration
