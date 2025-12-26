@@ -1,0 +1,63 @@
+name: Build & Package
+
+on:
+  push:
+    branches: [ master, main, modernization-* ]
+  pull_request:
+    branches: [ master, main ]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+      matrix:
+        qt_version: [6]
+
+    name: Build (Qt${{ matrix.qt_version }}) & AppImage
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential cmake ninja-build \
+            libmxml-dev libusb-1.0-0-dev zlib1g-dev \
+            libv4l-dev liblo-dev libopencv-dev \
+            wine64-tools wine-stable \
+            wget file
+
+      - name: Install Qt6 dependencies
+        run: |
+          sudo apt-get install -y \
+            qt6-base-dev qt6-tools-dev qt6-tools-dev-tools \
+            libgl1-mesa-dev qt6-l10n-tools
+
+      - name: Configure CMake
+        run: |
+          mkdir build
+          cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+
+      - name: Build
+        run: |
+          cd build
+          make -j$(nproc)
+
+      - name: Generate AppImage
+        env:
+          BUILD_DIR: "build"
+        run: |
+          chmod +x packaging/appimage/make_appimage.sh
+          ./packaging/appimage/make_appimage.sh
+
+      - name: Upload AppImage
+        uses: actions/upload-artifact@v4
+        with:
+          name: Linuxtrack-x86_64.AppImage
+          path: "*.AppImage"
+          if-no-files-found: error
+
