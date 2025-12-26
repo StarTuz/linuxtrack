@@ -143,7 +143,7 @@ void PluginInstall::installLinuxtrackWine() {
   }
 
   // Surgical Phase 1: Copy binaries directly to prefix
-  // We rename .dll.so to .dll so Wine can load them as native Windows DLLs
+  // We rename .dll.so/.exe.so to .dll/.exe so Wine can load them
   struct {
     const char *src;
     const char *dst;
@@ -151,6 +151,7 @@ void PluginInstall::installLinuxtrackWine() {
   } files[] = {{"NPClient.dll.so", "NPClient.dll", "client"},
                {"NPClient64.dll.so", "NPClient64.dll", "client"},
                {"FreeTrackClient.dll.so", "FreeTrackClient.dll", "ft_client"},
+               {"Controller.exe.so", "Controller.exe", "controller"},
                {NULL, NULL, NULL}};
 
   // Build a list of potential source directories
@@ -165,8 +166,10 @@ void PluginInstall::installLinuxtrackWine() {
   // Also check the source build directories (for development)
   srcDirs << appDir + QString::fromUtf8("/../../wine_bridge/client")
           << appDir + QString::fromUtf8("/../../wine_bridge/ft_client")
+          << appDir + QString::fromUtf8("/../../wine_bridge/controller")
           << appDir + QString::fromUtf8("/../wine_bridge/client")
-          << appDir + QString::fromUtf8("/../wine_bridge/ft_client");
+          << appDir + QString::fromUtf8("/../wine_bridge/ft_client")
+          << appDir + QString::fromUtf8("/../wine_bridge/controller");
 
   for (int i = 0; files[i].src != NULL; ++i) {
     QString srcPath;
@@ -281,6 +284,8 @@ void PluginInstall::installLinuxtrackWine() {
           "Installed to:\n"
           "  C:\\Program Files\\Linuxtrack\\\n"
           "  C:\\Program Files (x86)\\Linuxtrack\\\n\n"
+          "Controller.exe has been installed for hotkey support.\n"
+          "Run it from the prefix to set Pause/Recenter keys.\n\n"
           "No Windows installers were required."));
 #else
   if (isTirFirmwareInstalled() && isMfc42uInstalled()) {
