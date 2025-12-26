@@ -17,6 +17,7 @@ Unlike other legacy forks, this version addresses deep technical debt to ensure 
 
 ## 🎮 Verified Games & Apps
 
+- ✅ **DCS World** (Proton, with Controller.exe hotkeys)
 - ✅ **Elite Dangerous** (Proton 10/Steam Launcher)
 - ✅ **X-Plane 12** (Native Linux Plugin)
 - ✅ **IL-2 Sturmovik: Great Battles** (Proton)
@@ -35,8 +36,8 @@ sudo make install
 1. Open `ltr_gui`.
 2. Go to the **Misc.** tab.
 3. Click **"Install Linuxtrack-Wine support..."**.
-4. Choose **"Yes"** for **Surgical Injection**.
-5. Select your game's Wine prefix (e.g., `~/.steam/steam/steamapps/compatdata/359320/pfx` for Elite Dangerous).
+4. Select your game's Wine prefix from the auto-discovered list.
+5. Controller.exe is automatically installed for Pause/Recenter hotkeys.
 
 ## 🗺️ Roadmap & Next Steps
 
@@ -47,11 +48,13 @@ Current progress is tracked in [MODERNIZATION_ROADMAP.md](MODERNIZATION_ROADMAP.
 - [x] Modern OpenGL Shader-based 3D View.
 - [x] Bison/Flex to mINI migration.
 - [x] Surgical Wine/Proton Bridge Injection.
+- [x] Automatic Steam/Proton/Lutris/Bottles Prefix Discovery.
+- [x] Controller.exe for customizable Pause/Recenter hotkeys.
 
 **Upcoming:**
-- [ ] Automatic Steam/Proton Prefix Discovery.
 - [ ] Native UI for model scaling/offsets.
 - [ ] AppImage/Flatpak distribution.
+- [ ] Linux-native global hotkey daemon.
 
 ---
 
