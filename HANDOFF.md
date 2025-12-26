@@ -312,6 +312,16 @@ The `WineLauncher` helper class was forcing `WINEARCH=win32` environment variabl
 3.  **LALDialog**: Added a native Qt GUI dialog ("Manage Assets (LAL)...") to the Misc tab, allowing users to browse and install firmware archives easily.
 4.  **Verification**: Verified UI functionality and native extraction logic via unit tests.
 
+### 3.16 AppImage Packaging
+**Status:** ✅ COMPLETE
+
+**Problem:** Running `ltr_gui` from the build directory caused permissions/loading issues, and the traditional `sudo make install` approach is difficult to distribute to end users.
+
+**Fix:**
+1.  **Workflow**: Created `.github/workflows/build.yml` to automatically build an AppImage on every push.
+2.  **Script**: Added `packaging/appimage/make_appimage.sh` which uses `linuxdeploy` and `linuxdeploy-plugin-qt`.
+3.  **Result**: Users can now download a single, portable `Linuxtrack-x86_64.AppImage` executable that works on most modern Linux distributions (Ubuntu 22.04+, Fedora, Arch, etc.).
+
 ---
 
 ## 4. Build Configuration
