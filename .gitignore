@@ -1,0 +1,3 @@
+*.gch
+*.gch/
+src/qt_gui/ltr_gui.gch/

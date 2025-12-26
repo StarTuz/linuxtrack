@@ -77,7 +77,8 @@ void ReaderThread::run() {
 void GLWidget::objectsRead() {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   std::cerr << "GLWidget: Objects loaded from thread.\n";
-  if (program && program->isLinked()) {
+  objectsLoaded = true;
+  if (glInitialized && program && program->isLinked()) {
     std::cerr << "OpenGL context ready, building buffers...\n";
     makeCurrent();
     if (makeObjects()) {
@@ -88,7 +89,7 @@ void GLWidget::objectsRead() {
       std::cerr << "Failed to build buffers!\n";
     }
   } else {
-    std::cerr << "WARNING: OpenGL context not ready yet\n";
+    std::cerr << "OpenGL context not ready yet, will build in initializeGL.\n";
   }
 #endif
   emit ready();
@@ -98,7 +99,8 @@ GLWidget::GLWidget(QWidget *parent)
     : GLWIDGET_BASE(parent), rt(new ReaderThread())
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
       ,
-      program(nullptr), texture(nullptr), vertexCount(0)
+      program(nullptr), texture(nullptr), vertexCount(0), objectsLoaded(false),
+      glInitialized(false)
 #endif
 {
   xRot = 0;
@@ -213,10 +215,16 @@ void GLWidget::initializeGL() {
   projection.setToIdentity();
   projection.perspective(55.0f, 1.0f, 0.1f, 500.0f);
 
-  if (makeObjects()) {
-    std::cerr << "initializeGL: Objects built successfully.\n";
+  glInitialized = true;
+
+  if (objectsLoaded) {
+    if (makeObjects()) {
+      std::cerr << "initializeGL: Objects built successfully.\n";
+    } else {
+      std::cerr << "initializeGL: makeObjects failed!\n";
+    }
   } else {
-    std::cerr << "initializeGL: Objects not ready yet.\n";
+    std::cerr << "initializeGL: Waiting for objects to load...\n";
   }
 
   update();

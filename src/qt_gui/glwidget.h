@@ -86,6 +86,10 @@ private:
     bool isGlass;
   };
   std::vector<DrawCommand> drawCommands;
+
+  // Synchronization flags for thread/GL race condition
+  bool objectsLoaded;
+  bool glInitialized;
 #else
   // Legacy OpenGL Resources (Qt5)
   std::vector<GLuint> objects;

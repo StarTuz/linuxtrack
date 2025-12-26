@@ -412,6 +412,7 @@ int x = static_cast<int>(y);
 | Surgical Wine Injection | P1 | ✅ | 2 hrs | Bypass NSIS installer, install to both PF directories |
 | Controller.exe Hotkeys | P1 | ✅ | 30 min | Include Controller.exe for Pause/Recenter |
 | Deprecated APIs | P2 | ✅ | 1-2 hrs | sprintf→snprintf, strtok→strtok_r |
+| GLWidget Race Condition | P1 | ✅ | 30 min | Fixed 3D View black screen (thread sync) |
 | C++11/14 modernization | P3 | 🔲 | 4-8 hrs | Code quality |
 | CMake migration | P3 | 🔲 | 8-16 hrs | Build system |
 | Unit tests | P3 | 🔲 | 4-8 hrs | Code quality |
@@ -424,9 +425,11 @@ int x = static_cast<int>(y);
 After any modernization change, verify:
 
 - [ ] `make distclean && ./configure && make` succeeds
+- [ ] `cd src/qt_gui && qmake6 && make && sudo make install` (for Qt GUI)
 - [ ] `ldd` shows no missing libraries
 - [ ] RPATH points to correct location
 - [ ] `ltr_gui` launches and can configure devices
+- [ ] **3D View** displays model (not black screen)
 - [ ] Tracking works in a test application
 - [ ] Wine bridge works with a Windows game (if applicable)
 - [ ] Both Qt5 and Qt6 build (after Qt6 migration)

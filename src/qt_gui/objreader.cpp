@@ -152,15 +152,21 @@ void read_obj() {
   char *obj_list[] = {(char *)"sphere.obj", (char *)"sparow_opaq.obj",
                       (char *)"sparow_glass.obj", NULL};
 
+  std::cerr << "read_obj: Starting to load objects...\n";
   for (int i = 0; obj_list[i] != NULL; ++i) {
-    QFile f(PrefProxy::getDataPath(QString::fromUtf8(obj_list[i])));
+    QString path = PrefProxy::getDataPath(QString::fromUtf8(obj_list[i]));
+    std::cerr << "read_obj: Trying to load " << obj_list[i] << " from "
+              << path.toStdString() << "\n";
+    QFile f(path);
     obj_init(object);
     cnt = 0;
     vcnt = 0;
     tcnt = 0;
 
-    if (!f.open(QIODevice::ReadOnly | QIODevice::Text))
+    if (!f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      std::cerr << "read_obj: FAILED to open " << path.toStdString() << "\n";
       continue;
+    }
 
     QTextStream in(&f);
     while (!in.atEnd()) {
@@ -168,6 +174,10 @@ void read_obj() {
       process_line(line);
     }
     f.close();
+    std::cerr << "read_obj: Loaded object with " << object.vtx_table.size()
+              << " vertices\n";
     object_table.push_back(object);
   }
+  std::cerr << "read_obj: Done. Total objects loaded: " << object_table.size()
+            << "\n";
 }

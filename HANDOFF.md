@@ -262,6 +262,36 @@ error: static assertion failed: "sizeof(\"FreeTrackClient\") <= sizeof(__wine_db
     - ✅ **Elite Dangerous**: Confirmed successful on **Proton 10**.
     - ✅ **X-Plane 12**: Native plugin confirmed working.
 
+### 3.11 Deprecated API Replacement & Code Safety
+**Status:** ✅ COMPLETE
+
+**Problem:** Several deprecated C APIs (`sprintf`, `strtok`) posed buffer overflow and thread-safety risks.
+
+**Fixes:**
+1.  **Wine Bridge (High Priority)**:
+    - `wine_bridge/client/check_data.c`: `sprintf` → `snprintf` with tracked buffer size
+    - `wine_bridge/client/rest.c`: All path construction now uses `snprintf`
+    - `wine_bridge/ft_tester/main.cpp`: `sprintf` → `snprintf` for DLL path
+2.  **Core Library**:
+    - `webcam_driver.c`: `snprintf` for debug frame filenames
+    - `image_process.c`: `snprintf` for debug data filenames
+    - `linuxtrack.c`: `strtok` → `strtok_r` for thread-safe `LINUXTRACK_LIBS` parsing
+
+### 3.12 GLWidget Race Condition Fix
+**Status:** ✅ COMPLETE
+
+**Problem:** 3D View displayed black due to race condition between `ReaderThread` (loading model objects) and `initializeGL()` (building OpenGL buffers).
+
+**Root Cause:** The thread could finish before OpenGL was initialized, or vice versa, causing `makeObjects()` to fail.
+
+**Fix:**
+1.  Added `objectsLoaded` and `glInitialized` flags to `GLWidget`.
+2.  `initializeGL()` sets `glInitialized = true` and calls `makeObjects()` if `objectsLoaded` is already true.
+3.  `objectsRead()` sets `objectsLoaded = true` and calls `makeObjects()` if `glInitialized` is already true.
+4.  Whichever runs second triggers the buffer build.
+
+**Note:** After `make distclean`, a `sudo make install` in `src/qt_gui` is required to install model files (`.obj`) to `/opt/linuxtrack/share/linuxtrack/`.
+
 ---
 
 ## 4. Build Configuration
