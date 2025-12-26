@@ -3,6 +3,7 @@
 #endif
 
 #include "ltr_gui_prefs.h"
+#include "prefix_discovery.h"
 #include "utils.h"
 #include "xplugin.h"
 #include <QFile>
@@ -78,9 +79,16 @@ static bool installPlugin(const QString sourceFile, const QString destFile) {
 
 void XPluginInstall::on_BrowseXPlane_pressed() {
   QString startDir = QDir::homePath();
-  QString userPath = QString::fromUtf8("/xplane/x-plane/X-Plane12/");
-  if (QDir(userPath).exists()) {
-    startDir = userPath;
+  QStringList discovered = PrefixDiscovery::discoverXPlane();
+  if (!discovered.isEmpty()) {
+    // Pick the first one as a sensible default
+    startDir = discovered.first();
+  } else {
+    // Fallback to the specific path for now if discovery fails
+    QString userPath = QString::fromUtf8("/xplane/x-plane/X-Plane12/");
+    if (QDir(userPath).exists()) {
+      startDir = userPath;
+    }
   }
 
   QString fileName = QFileDialog::getOpenFileName(

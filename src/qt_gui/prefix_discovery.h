@@ -15,6 +15,7 @@ struct DetectedPrefix {
 class PrefixDiscovery {
 public:
   static QList<DetectedPrefix> discover();
+  static QStringList discoverXPlane();
 
 private:
   static void scanSteam(QList<DetectedPrefix> &list);

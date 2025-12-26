@@ -163,3 +163,68 @@ void PrefixDiscovery::scanStardardWine(QList<DetectedPrefix> &list) {
     list << dp;
   }
 }
+
+QStringList PrefixDiscovery::discoverXPlane() {
+  QStringList paths;
+  QString home = QDir::homePath();
+
+  // 1. Search X-Plane install files (Standalone)
+  QStringList installFiles;
+  installFiles << home + QString::fromUtf8("/.x-plane/x-plane_install_12.txt")
+               << home + QString::fromUtf8("/.x-plane/x-plane_install_11.txt")
+               << home + QString::fromUtf8("/.x-plane/x-plane_install.txt");
+
+  for (const QString &file : installFiles) {
+    if (QFile::exists(file)) {
+      QFile f(file);
+      if (f.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        QTextStream in(&f);
+        while (!in.atEnd()) {
+          QString line = in.readLine().trimmed();
+          if (line.isEmpty() || line.startsWith(QLatin1Char('#')))
+            continue;
+          if (QDir(line).exists()) {
+            paths << line;
+          }
+        }
+      }
+    }
+  }
+
+  // 2. Search Steam Libraries (Native Steam version)
+  QStringList potentialVdfs;
+  potentialVdfs << home + QString::fromUtf8(
+                              "/.steam/steam/steamapps/libraryfolders.vdf")
+                << home +
+                       QString::fromUtf8(
+                           "/.local/share/Steam/steamapps/libraryfolders.vdf");
+
+  for (const QString &vdfPath : potentialVdfs) {
+    if (!QFile::exists(vdfPath))
+      continue;
+
+    QFile file(vdfPath);
+    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      QTextStream in(&file);
+      QRegularExpression re(QString::fromUtf8("\"path\"\\s+\"([^\"]+)\""));
+      while (!in.atEnd()) {
+        QString line = in.readLine();
+        QRegularExpressionMatch match = re.match(line);
+        if (match.hasMatch()) {
+          QString libPath = match.captured(1);
+          QString xp12 =
+              libPath + QString::fromUtf8("/steamapps/common/X-Plane 12");
+          QString xp11 =
+              libPath + QString::fromUtf8("/steamapps/common/X-Plane 11");
+          if (QDir(xp12).exists())
+            paths << xp12;
+          if (QDir(xp11).exists())
+            paths << xp11;
+        }
+      }
+    }
+  }
+
+  paths.removeDuplicates();
+  return paths;
+}
