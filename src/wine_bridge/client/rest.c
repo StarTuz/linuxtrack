@@ -73,16 +73,19 @@ bool game_data_get_desc(int id, game_desc_t *gd) {
     }
   }
 
-  char *path1 = (char *)malloc(200 + strlen(home));
+  size_t path1_size = 200 + strlen(home);
+  char *path1 = (char *)malloc(path1_size);
   if (path1 == NULL) {
     printf("DEBUG: Memory allocation failed for path1!\n");
     return false;
   }
 
 #ifdef LINUXTRACK_MODERN
-  sprintf(path1, "%s/.config/tuxtracks/tir_firmware/gamedata.txt", home);
+  snprintf(path1, path1_size, "%s/.config/tuxtracks/tir_firmware/gamedata.txt",
+           home);
 #else
-  sprintf(path1, "%s/.config/linuxtrack/tir_firmware/gamedata.txt", home);
+  snprintf(path1, path1_size, "%s/.config/linuxtrack/tir_firmware/gamedata.txt",
+           home);
 #endif
   if ((f = fopen(path1, "r")) == NULL) {
     printf("Can't open data file '%s'!\n", path1);
@@ -142,13 +145,16 @@ static bool game_data_iterate(bool (*on_entry)(int id, const char *name,
       home = ".";
     }
   }
-  char *path1 = (char *)malloc(200 + strlen(home));
+  size_t path1_size = 200 + strlen(home);
+  char *path1 = (char *)malloc(path1_size);
   if (path1 == NULL)
     return false;
 #ifdef LINUXTRACK_MODERN
-  sprintf(path1, "%s/.config/tuxtracks/tir_firmware/gamedata.txt", home);
+  snprintf(path1, path1_size, "%s/.config/tuxtracks/tir_firmware/gamedata.txt",
+           home);
 #else
-  sprintf(path1, "%s/.config/linuxtrack/tir_firmware/gamedata.txt", home);
+  snprintf(path1, path1_size, "%s/.config/linuxtrack/tir_firmware/gamedata.txt",
+           home);
 #endif
   if ((f = fopen(path1, "r")) == NULL) {
     free(path1);
@@ -638,8 +644,7 @@ bool game_data_find_id_by_steam_appid(const char *steam_appid, int *out_id) {
   char path[4096];
 #ifdef LINUXTRACK_MODERN
   snprintf(path, sizeof(path),
-           "%s/.config/tuxtracks/tir_firmware/steam_to_trackir_id.txt",
-           home);
+           "%s/.config/tuxtracks/tir_firmware/steam_to_trackir_id.txt", home);
 #else
   snprintf(path, sizeof(path),
            "%s/.config/linuxtrack/tir_firmware/steam_to_trackir_id.txt", home);
@@ -690,8 +695,9 @@ bool getSomeSeriousPoetry(char *verse1, char *verse2) {
     }
   }
 
-  char *path1 = (char *)malloc(200 + strlen(home));
-  char *path2 = (char *)malloc(200 + strlen(home));
+  size_t path_size = 200 + strlen(home);
+  char *path1 = (char *)malloc(path_size);
+  char *path2 = (char *)malloc(path_size);
 
   if (path1 == NULL || path2 == NULL) {
     printf("DEBUG: Memory allocation failed for path1 or path2!\n");
@@ -703,11 +709,15 @@ bool getSomeSeriousPoetry(char *verse1, char *verse2) {
   }
 
 #ifdef LINUXTRACK_MODERN
-  sprintf(path1, "%s/.config/tuxtracks/tir_firmware/poem1.txt", home);
-  sprintf(path2, "%s/.config/tuxtracks/tir_firmware/poem2.txt", home);
+  snprintf(path1, path_size, "%s/.config/tuxtracks/tir_firmware/poem1.txt",
+           home);
+  snprintf(path2, path_size, "%s/.config/tuxtracks/tir_firmware/poem2.txt",
+           home);
 #else
-  sprintf(path1, "%s/.config/linuxtrack/tir_firmware/poem1.txt", home);
-  sprintf(path2, "%s/.config/linuxtrack/tir_firmware/poem2.txt", home);
+  snprintf(path1, path_size, "%s/.config/linuxtrack/tir_firmware/poem1.txt",
+           home);
+  snprintf(path2, path_size, "%s/.config/linuxtrack/tir_firmware/poem2.txt",
+           home);
 #endif
   FILE *f1 = fopen(path1, "rb");
   memset(verse1, 0, 200);

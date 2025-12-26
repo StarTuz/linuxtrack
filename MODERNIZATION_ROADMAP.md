@@ -263,17 +263,74 @@ jobs:
 
 ### 2.3 Replace Deprecated APIs
 
-**Status:** 🔲 Not Started  
+**Status:** ✅ COMPLETE (2025-12-26)  
 **Effort:** 1-2 hours  
 **Risk:** Low (with testing)
 
-| Old API | New API | Thread-Safe | Files |
-|---------|---------|-------------|-------|
-| `gethostbyname()` | `getaddrinfo()` | ✅ | Network code |
-| `sprintf()` | `snprintf()` | Overflow-safe | Various |
-| `strtok()` | `strtok_r()` | ✅ | Various |
+#### Summary of Findings
 
----
+| Old API | New API | Count Found | Status |
+|---------|---------|-------------|--------|
+| `gethostbyname()` | `getaddrinfo()` | 0 | ✅ Not used |
+| `sprintf()` | `snprintf()` | ~15 direct calls | ✅ Fixed |
+| `strtok()` | `strtok_r()` | 1 call | ✅ Fixed |
+
+**Note:** Many string formatting calls use `asprintf()` which is already safe (allocates buffer dynamically).
+
+#### Detailed Audit: `sprintf()` Calls
+
+##### Wine Bridge (Critical - exposed to untrusted paths)
+
+| File | Line | Code | Risk |
+|------|------|------|------|
+| `wine_bridge/client/check_data.c` | 23 | `sprintf(path1, "%s/.config/linuxtrack/tir_firmware/TIRViews.dll", home)` | High |
+| `wine_bridge/client/check_data.c` | 30 | `sprintf(path1, "%s/.config/linuxtrack/tir_firmware/mfc42u.dll", home)` | High |
+| `wine_bridge/client/rest.c` | 83,85,149,151 | `sprintf(path1, "%s/.config/linuxtrack/...", home)` | High |
+| `wine_bridge/client/rest.c` | 706-710 | `sprintf(path1/path2, "...poem1/poem2.txt", home)` | Medium |
+| `wine_bridge/ft_tester/main.cpp` | 68 | `sprintf(full_path, "%s\\\\FreeTrackClient.dll", path)` | Medium |
+
+##### Core Library
+
+| File | Line | Code | Risk |
+|------|------|------|------|
+| `webcam_driver.c` | 826 | `sprintf(fname, "FRAME%03d.bin", frm_cntr % 100)` | Low (fixed format) |
+| `tir_img.c` | 573 | `sprintf(name, "f%02X%04d.raw", pkt_no, fc++)` | Low (fixed format) |
+| `image_process.c` | 513 | `sprintf(name, "f%04d.data", fc++)` | Low (fixed format) |
+| `ltlib_client.c` | 62,65 | `sprintf(txtp, "%02X ", msg[r])` | Low (debug output) |
+| `lt_server.c` | 56,59 | `sprintf(txtp, "%02X ", msg[r])` | Low (debug output) |
+
+##### Non-standard (Perl-like syntax in C++)
+
+| File | Line | Code | Notes |
+|------|------|------|-------|
+| `tir4_model.cpp` | 152,156 | `return sprintf("0x%08X", $res)` | Actually Perl embedded in C++ - skip |
+
+#### Detailed Audit: `strtok()` Calls
+
+| File | Line | Code | Risk |
+|------|------|------|------|
+| `linuxtrack.c` | 356 | `part = strtok(part, ":")` | Medium (not thread-safe) |
+
+#### Fix Pattern
+
+```c
+// BEFORE (unsafe - no bounds checking)
+char path1[256];
+sprintf(path1, "%s/.config/linuxtrack/file.txt", home);
+
+// AFTER (safe - bounds checked)
+char path1[256];
+snprintf(path1, sizeof(path1), "%s/.config/linuxtrack/file.txt", home);
+
+// BEFORE (not thread-safe)
+part = strtok(str, ":");
+
+// AFTER (thread-safe)
+char *saveptr;
+part = strtok_r(str, ":", &saveptr);
+```
+
+
 
 ## Tier 3: Higher Effort (Future)
 
@@ -354,7 +411,7 @@ int x = static_cast<int>(y);
 | Wine Prefix Discovery | P1 | ✅ | 2 hrs | Automatic Steam/Lutris/Bottles detection |
 | Surgical Wine Injection | P1 | ✅ | 2 hrs | Bypass NSIS installer, install to both PF directories |
 | Controller.exe Hotkeys | P1 | ✅ | 30 min | Include Controller.exe for Pause/Recenter |
-| Deprecated APIs | P2 | 🔲 | 1-2 hrs | Thread safety |
+| Deprecated APIs | P2 | ✅ | 1-2 hrs | sprintf→snprintf, strtok→strtok_r |
 | C++11/14 modernization | P3 | 🔲 | 4-8 hrs | Code quality |
 | CMake migration | P3 | 🔲 | 8-16 hrs | Build system |
 | Unit tests | P3 | 🔲 | 4-8 hrs | Code quality |

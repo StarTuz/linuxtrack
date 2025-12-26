@@ -1,24 +1,22 @@
-#include <stdio.h>
-#include <stdbool.h>
-#include <assert.h>
 #include "image_process.h"
 #include "list.h"
 #include "utils.h"
+#include <assert.h>
+#include <stdbool.h>
+#include <stdio.h>
 
-
-typedef struct preblob_t{
-  float sum_x, sum_y; //sums of pixval and coord products
-  int sum; //sum of pixel weights 
-  int points; //pixel count
+typedef struct preblob_t {
+  float sum_x, sum_y; // sums of pixval and coord products
+  int sum;            // sum of pixel weights
+  int points;         // pixel count
   bool added;
   bool matched;
 } preblob_t;
 
 static plist preblobs = NULL;
 
-
 typedef struct {
-  unsigned int x1,x2;
+  unsigned int x1, x2;
   preblob_t *pb;
 } range;
 
@@ -28,47 +26,42 @@ typedef struct {
 } stripe_array;
 
 static stripe_array current = {
-  .ranges = NULL,
-  .limit = 0,
+    .ranges = NULL,
+    .limit = 0,
 };
 
 static stripe_array next = {
-  .ranges = NULL,
-  .limit = 0,
+    .ranges = NULL,
+    .limit = 0,
 };
 
 static unsigned int current_vline = -2;
 
-
-static void clip_coord(int *coord, int min,
-                       int max)
-{
+static void clip_coord(int *coord, int min, int max) {
   int tmp = *coord;
   tmp = (tmp < min) ? min : tmp;
   tmp = (tmp > max) ? max : tmp;
   *coord = tmp;
 }
 
-static void draw_stripe(image_t *img, int x, int y, int x_end, unsigned char color)
-{
+static void draw_stripe(image_t *img, int x, int y, int x_end,
+                        unsigned char color) {
   assert(img != NULL);
   x /= img->ratio;
   x_end /= img->ratio;
-  clip_coord(&x, 0, img->w-1);
-  clip_coord(&y, 0, img->h-1);
-  clip_coord(&x_end, 0, img->w-1);
+  clip_coord(&x, 0, img->w - 1);
+  clip_coord(&y, 0, img->h - 1);
+  clip_coord(&x_end, 0, img->w - 1);
   unsigned char *ptr = img->bitmap + y * img->w + x;
   x_end -= x;
-  while(x_end >= 0){
+  while (x_end >= 0) {
     *ptr = color;
     ++ptr;
     --x_end;
   }
 }
 
-
-void ltr_int_draw_square(image_t *img, int x, int y, int size)
-{
+void ltr_int_draw_square(image_t *img, int x, int y, int size) {
   assert(img != NULL);
   assert(x >= 0);
   assert(y >= 0);
@@ -76,21 +69,20 @@ void ltr_int_draw_square(image_t *img, int x, int y, int size)
   int x2 = (int)(x / img->ratio) + size;
   int y1 = y - size;
   int y2 = y + size;
-  
-//  clip_coord(&x, 0, img->w);
-  clip_coord(&x1, 0, img->w-1);
-  clip_coord(&y1, 0, img->h-1);
-  clip_coord(&x2, 0, img->w-1);
-  clip_coord(&y2, 0, img->h-1);
-  
-  while(y1 < y2){
+
+  //  clip_coord(&x, 0, img->w);
+  clip_coord(&x1, 0, img->w - 1);
+  clip_coord(&y1, 0, img->h - 1);
+  clip_coord(&x2, 0, img->w - 1);
+  clip_coord(&y2, 0, img->h - 1);
+
+  while (y1 < y2) {
     draw_stripe(img, x1, y1, x2, 0xFF);
     ++y1;
   }
 }
 
-void ltr_int_draw_empty_square(image_t *img, int x1, int y1, int x2, int y2)
-{
+void ltr_int_draw_empty_square(image_t *img, int x1, int y1, int x2, int y2) {
   assert(img != NULL);
   assert(x1 >= 0);
   assert(y1 >= 0);
@@ -98,18 +90,18 @@ void ltr_int_draw_empty_square(image_t *img, int x1, int y1, int x2, int y2)
   assert(y2 >= y1);
   x1 = x1 / img->ratio;
   x2 = x2 / img->ratio;
-  
-//  clip_coord(&x, 0, img->w);
-  clip_coord(&x1, 0, img->w-1);
-  clip_coord(&y1, 0, img->h-1);
-  clip_coord(&x2, 0, img->w-1);
-  clip_coord(&y2, 0, img->h-1);
-  
+
+  //  clip_coord(&x, 0, img->w);
+  clip_coord(&x1, 0, img->w - 1);
+  clip_coord(&y1, 0, img->h - 1);
+  clip_coord(&x2, 0, img->w - 1);
+  clip_coord(&y2, 0, img->h - 1);
+
   draw_stripe(img, x1, y1, x2, 0xFF);
   draw_stripe(img, x1, y2, x2, 0xFF);
   unsigned char *ptr = img->bitmap + y1 * img->w + x1;
   int xd = x2 - x1;
-  while(y1 <= y2){
+  while (y1 <= y2) {
     *(ptr) = 0xFF;
     *(ptr + xd) = 0xFF;
     ptr += img->w;
@@ -117,39 +109,35 @@ void ltr_int_draw_empty_square(image_t *img, int x1, int y1, int x2, int y2)
   }
 }
 
-
-void ltr_int_draw_cross(image_t *img, int x, int y, int size)
-{
+void ltr_int_draw_cross(image_t *img, int x, int y, int size) {
   int cntr;
   int x_m = x - size;
   int x_p = x + size;
   int y_m = y - size;
   int y_p = y + size;
-  clip_coord(&x_m, 0, img->w-1);
-  clip_coord(&x_p, 0, img->w-1);
-  clip_coord(&y_m, 0, img->h-1);
-  clip_coord(&y_p, 0, img->h-1);
-  clip_coord(&x  , 0, img->w-1);
-  clip_coord(&y  , 0, img->h-1);
-  
+  clip_coord(&x_m, 0, img->w - 1);
+  clip_coord(&x_p, 0, img->w - 1);
+  clip_coord(&y_m, 0, img->h - 1);
+  clip_coord(&y_p, 0, img->h - 1);
+  clip_coord(&x, 0, img->w - 1);
+  clip_coord(&y, 0, img->h - 1);
+
   unsigned char *pt;
   pt = img->bitmap + (img->w * y) + x_m;
-  for(cntr = x_m; cntr <= x_p; ++cntr){
+  for (cntr = x_m; cntr <= x_p; ++cntr) {
     *(pt++) = 0xFF;
   }
   pt = img->bitmap + (img->w * y_m) + x;
-  for(cntr = y_m; cntr <= y_p; ++cntr){
+  for (cntr = y_m; cntr <= y_p; ++cntr) {
     *pt = 0xFF;
     pt += img->w;
   }
 }
 
-
-
 /*
 static struct blob_type* new_blob(float x, float y, int score)
 {
-  struct blob_type *tmp = 
+  struct blob_type *tmp =
     (struct blob_type*)ltr_int_my_malloc(sizeof(struct blob_type));
   tmp->x = x;
   tmp->y = y;
@@ -158,16 +146,15 @@ static struct blob_type* new_blob(float x, float y, int score)
 }
 */
 
-static bool stripe_in_range(stripe_t *stripe, range *rng)
-{
+static bool stripe_in_range(stripe_t *stripe, range *rng) {
 #ifdef DBG_MSG
   printf("Testing coincidence!\n");
-  printf("Stripe: y:%d   x:%d - %d (%d   %d)\n", stripe->vline, stripe->hstart, 
+  printf("Stripe: y:%d   x:%d - %d (%d   %d)\n", stripe->vline, stripe->hstart,
          stripe->hstop, stripe->sum, stripe->sum_x);
   printf("Range: x:%d - %d\n", rng->x1, rng->x2);
 #endif
-  if((((int)stripe->hstart)-1) <= ((int)rng->x2)){
-    if((stripe->hstop+1) >= rng->x1){
+  if ((((int)stripe->hstart) - 1) <= ((int)rng->x2)) {
+    if ((stripe->hstop + 1) >= rng->x1) {
 #ifdef DBG_MSG
       printf("Coincide!\n");
 #endif
@@ -177,8 +164,7 @@ static bool stripe_in_range(stripe_t *stripe, range *rng)
   return false;
 }
 
-static void merge_preblobs(preblob_t *b1, preblob_t *b2)
-{
+static void merge_preblobs(preblob_t *b1, preblob_t *b2) {
 #ifdef DBG_MSG
   printf("Merging %p and %p\n", b1, b2);
 #endif
@@ -190,10 +176,9 @@ static void merge_preblobs(preblob_t *b1, preblob_t *b2)
   b1->points += b2->points;
 }
 
-static void add_stripe_to_preblob(preblob_t *pb, stripe_t *stripe)
-{
+static void add_stripe_to_preblob(preblob_t *pb, stripe_t *stripe) {
 #ifdef DBG_MSG
-  printf("Adding stripe to blob %p\n",pb);
+  printf("Adding stripe to blob %p\n", pb);
 #endif
   pb->sum_x += ((float)stripe->sum * stripe->hstart) + stripe->sum_x;
   pb->sum_y += (float)stripe->sum * stripe->vline;
@@ -201,9 +186,8 @@ static void add_stripe_to_preblob(preblob_t *pb, stripe_t *stripe)
   pb->points += stripe->points;
 }
 
-static preblob_t* preblob_from_stripe(stripe_t *stripe)
-{
-  preblob_t *pb = (preblob_t*)ltr_int_my_malloc(sizeof(preblob_t));
+static preblob_t *preblob_from_stripe(stripe_t *stripe) {
+  preblob_t *pb = (preblob_t *)ltr_int_my_malloc(sizeof(preblob_t));
   pb->sum_x = ((float)stripe->sum * stripe->hstart) + stripe->sum_x;
   pb->sum_y = (float)stripe->sum * stripe->vline;
   pb->sum = stripe->sum;
@@ -211,26 +195,26 @@ static preblob_t* preblob_from_stripe(stripe_t *stripe)
   pb->added = false;
   pb->matched = true;
 #ifdef DBG_MSG
-  printf("Creating new blob %p\n",pb);
+  printf("Creating new blob %p\n", pb);
 #endif
   return pb;
 }
 
-static bool store_preblobs(bool all)
-{
-  if(preblobs == NULL){
+static bool store_preblobs(bool all) {
+  if (preblobs == NULL) {
     preblobs = ltr_int_create_list();
   }
   int i;
-  for(i = 0; i < current.limit; ++i){
+  for (i = 0; i < current.limit; ++i) {
 #ifdef DBG_MSG
     printf("Checking current %p m:%c a:%c: ", current.ranges[i].pb,
-	   current.ranges[i].pb->matched?'t':'f', current.ranges[i].pb->added?'t':'f');
+           current.ranges[i].pb->matched ? 't' : 'f',
+           current.ranges[i].pb->added ? 't' : 'f');
 #endif
-    if(!(current.ranges[i].pb->matched)){
-      if(!current.ranges[i].pb->added){
+    if (!(current.ranges[i].pb->matched)) {
+      if (!current.ranges[i].pb->added) {
 #ifdef DBG_MSG
-	printf("Added!");
+        printf("Added!");
 #endif
         current.ranges[i].pb->added = true;
         ltr_int_add_element(preblobs, current.ranges[i].pb);
@@ -240,15 +224,15 @@ static bool store_preblobs(bool all)
     printf("\n");
 #endif
   }
-  for(i = 0; i < next.limit; ++i){
-      next.ranges[i].pb->matched = false;
-    if(all){
+  for (i = 0; i < next.limit; ++i) {
+    next.ranges[i].pb->matched = false;
+    if (all) {
 #ifdef DBG_MSG
       printf("Checking next %p: ", current.ranges[i].pb);
 #endif
-      if(!next.ranges[i].pb->added){
+      if (!next.ranges[i].pb->added) {
 #ifdef DBG_MSG
-	printf("Added!\n");
+        printf("Added!\n");
 #endif
         next.ranges[i].pb->added = true;
         ltr_int_add_element(preblobs, next.ranges[i].pb);
@@ -261,65 +245,65 @@ static bool store_preblobs(bool all)
   return true;
 }
 
-bool ltr_int_add_stripe(stripe_t *stripe, image_t *img)
-{
+bool ltr_int_add_stripe(stripe_t *stripe, image_t *img) {
   assert(current.ranges != NULL);
   assert(stripe != NULL);
   assert(img != NULL);
-  
+
   bool stripe_ok = true;
-  
-  if(stripe->vline > (unsigned int)img->h){
-    ltr_int_log_message("Stripe ignored. (vline %d > img. height %d)\n", 
+
+  if (stripe->vline > (unsigned int)img->h) {
+    ltr_int_log_message("Stripe ignored. (vline %d > img. height %d)\n",
                         stripe->vline, img->h);
     stripe_ok = false;
   }
-  
-  if(stripe->hstart > (unsigned int)img->w * img->ratio){
+
+  if (stripe->hstart > (unsigned int)img->w * img->ratio) {
     ltr_int_log_message("Stripe ignored. (hstart %d > img. width %d)\n",
                         stripe->hstart, img->w * img->ratio);
     stripe_ok = false;
   }
 
-  if(stripe->hstop > (unsigned int)img->w * img->ratio){
+  if (stripe->hstop > (unsigned int)img->w * img->ratio) {
     ltr_int_log_message("Stripe ignored. (hstop %d > img. width %d)\n",
                         stripe->hstop, img->w * img->ratio);
     stripe_ok = false;
   }
 
-  if(stripe->hstart > stripe->hstop){
+  if (stripe->hstart > stripe->hstop) {
     ltr_int_log_message("Stripe ignored. (hstart %d > hstop %d)\n",
                         stripe->hstart, stripe->hstop);
     stripe_ok = false;
   }
-  
-  if(!stripe_ok){
+
+  if (!stripe_ok) {
     return false;
   }
-  
-  if(img->bitmap != NULL){
+
+  if (img->bitmap != NULL) {
     draw_stripe(img, stripe->hstart, stripe->vline, stripe->hstop, 0x80);
   }
 #ifdef DBG_MSG
-  printf("Adding stripe: y:%d   x:%d - %d (%d   %d)\n", stripe->vline, stripe->hstart, 
-         stripe->hstop, stripe->sum, stripe->sum_x);
+  printf("Adding stripe: y:%d   x:%d - %d (%d   %d)\n", stripe->vline,
+         stripe->hstart, stripe->hstop, stripe->sum, stripe->sum_x);
 #endif
   int i;
-  //First of all check if we aren't on a different line
-  if(current_vline != stripe->vline){
-    //Line differs - check if it isn't next line
-    if((current_vline + 1) != stripe->vline){
+  // First of all check if we aren't on a different line
+  if (current_vline != stripe->vline) {
+    // Line differs - check if it isn't next line
+    if ((current_vline + 1) != stripe->vline) {
       store_preblobs(true);
-      current.limit= 0;
+      current.limit = 0;
       next.limit = 0;
-    }else{
-      //I'm on the next line, so put next to current and clean next
-/*      printf("Next line!\n");
-      for(i = 0; i < next.limit; ++i){
-        printf("Next: %d - %d, %p, %s\n", next.ranges[i].x1, next.ranges[i].x2,
-               next.ranges[i].pb, next.ranges[i].matched ? "1" : "0");
-      }
-*/
+    } else {
+      // I'm on the next line, so put next to current and clean next
+      /*      printf("Next line!\n");
+            for(i = 0; i < next.limit; ++i){
+              printf("Next: %d - %d, %p, %s\n", next.ranges[i].x1,
+         next.ranges[i].x2, next.ranges[i].pb, next.ranges[i].matched ? "1" :
+         "0");
+            }
+      */
       store_preblobs(false);
       stripe_array tmp;
       tmp = current;
@@ -327,44 +311,45 @@ bool ltr_int_add_stripe(stripe_t *stripe, image_t *img)
       next = tmp;
       next.limit = 0;
 #ifdef DBG_MSG
-      for(i = 0; i < current.limit; ++i){
-        printf("Current: %d - %d, %p, %s\n", current.ranges[i].x1, current.ranges[i].x2,
-               current.ranges[i].pb, current.ranges[i].pb->matched ? "1" : "0");
+      for (i = 0; i < current.limit; ++i) {
+        printf("Current: %d - %d, %p, %s\n", current.ranges[i].x1,
+               current.ranges[i].x2, current.ranges[i].pb,
+               current.ranges[i].pb->matched ? "1" : "0");
       }
 #endif
     }
     current_vline = stripe->vline;
   }
   range *rng = NULL;
-  for(i = 0; i < current.limit; ++i){
-    if(stripe_in_range(stripe, &(current.ranges[i]))){
+  for (i = 0; i < current.limit; ++i) {
+    if (stripe_in_range(stripe, &(current.ranges[i]))) {
       current.ranges[i].pb->matched = true;
-      if(rng == NULL){
+      if (rng == NULL) {
         rng = &(current.ranges[i]);
-      }else{
-        if(rng->pb != current.ranges[i].pb){
+      } else {
+        if (rng->pb != current.ranges[i].pb) {
           merge_preblobs(rng->pb, current.ranges[i].pb);
           preblob_t *merged = current.ranges[i].pb;
-	  int j;
-	  for(j = 0; j < current.limit; ++j){
-	    if(current.ranges[j].pb == merged){
-	      current.ranges[j].pb = rng->pb;
-	    }
-	  }
-	  for(j = 0; j < next.limit; ++j){
-	    if(next.ranges[j].pb == merged){
-	      next.ranges[j].pb = rng->pb;
-	    }
-	  }
-	  free(merged);
+          int j;
+          for (j = 0; j < current.limit; ++j) {
+            if (current.ranges[j].pb == merged) {
+              current.ranges[j].pb = rng->pb;
+            }
+          }
+          for (j = 0; j < next.limit; ++j) {
+            if (next.ranges[j].pb == merged) {
+              next.ranges[j].pb = rng->pb;
+            }
+          }
+          free(merged);
         }
       }
     }
   }
   preblob_t *pb = NULL;
-  if(rng == NULL){
+  if (rng == NULL) {
     pb = preblob_from_stripe(stripe);
-  }else{
+  } else {
     pb = rng->pb;
     add_stripe_to_preblob(pb, stripe);
   }
@@ -375,58 +360,54 @@ bool ltr_int_add_stripe(stripe_t *stripe, image_t *img)
   return true;
 }
 
-
 static dbg_flag_type img_dbg_flag = DBG_CHECK;
 
-void ltr_int_prepare_for_processing(int w, int h)
-{
-  //h = 0;
-  (void) h;
-  if(current.ranges == NULL){
-    current.ranges = (range*)ltr_int_my_malloc(sizeof(range) * ((w / 2) + 1));
-    next.ranges = (range*)ltr_int_my_malloc(sizeof(range) * ((w / 2) + 1));
+void ltr_int_prepare_for_processing(int w, int h) {
+  // h = 0;
+  (void)h;
+  if (current.ranges == NULL) {
+    current.ranges = (range *)ltr_int_my_malloc(sizeof(range) * ((w / 2) + 1));
+    next.ranges = (range *)ltr_int_my_malloc(sizeof(range) * ((w / 2) + 1));
   }
-  if(img_dbg_flag == DBG_CHECK){
+  if (img_dbg_flag == DBG_CHECK) {
     img_dbg_flag = ltr_int_get_dbg_flag('p');
   }
 }
 
-void ltr_int_cleanup_after_processing()
-{
-  if(current.ranges != NULL){
+void ltr_int_cleanup_after_processing() {
+  if (current.ranges != NULL) {
     free(current.ranges);
     current.ranges = NULL;
   }
-  if(next.ranges != NULL){
+  if (next.ranges != NULL) {
     free(next.ranges);
     next.ranges = NULL;
   }
-  current.limit= 0;
+  current.limit = 0;
   next.limit = 0;
 }
 
-void ltr_int_to_stripes(image_t *img)
-{
+void ltr_int_to_stripes(image_t *img) {
   assert(img != NULL);
   int x, y;
   unsigned char *ptr;
   bool in_stripe = false;
   stripe_t stripe;
-  
+
 #ifdef DBG_MSG
   printf(">\n");
 #endif
-  
-  for(y = 0; y < img->h; ++y){
+
+  for (y = 0; y < img->h; ++y) {
     ptr = img->bitmap + (y * img->w);
-    for(x = 0; x < img->w; ++x){
-      if(*ptr != 0){
-        if(in_stripe){
+    for (x = 0; x < img->w; ++x) {
+      if (*ptr != 0) {
+        if (in_stripe) {
           ++stripe.points;
           stripe.hstop = x;
           stripe.sum += *ptr;
           stripe.sum_x += ((*ptr) * stripe.points);
-        }else{
+        } else {
           stripe.points = 0;
           stripe.vline = y;
           stripe.hstart = x;
@@ -435,69 +416,69 @@ void ltr_int_to_stripes(image_t *img)
           stripe.sum = *ptr;
           in_stripe = true;
         }
-      }else{
-        if(in_stripe){
+      } else {
+        if (in_stripe) {
           ++stripe.points;
           in_stripe = false;
-          //printf("Stripe: y: %1d, from %1d to %1d, %1d points;\n", 
-          //       stripe.vline, stripe.hstart, stripe.hstop, stripe.points);
-          //printf("sum: %6d, sum_x: %6d\n", stripe.sum, stripe.sum_x);
+          // printf("Stripe: y: %1d, from %1d to %1d, %1d points;\n",
+          //        stripe.vline, stripe.hstart, stripe.hstop, stripe.points);
+          // printf("sum: %6d, sum_x: %6d\n", stripe.sum, stripe.sum_x);
           ltr_int_add_stripe(&stripe, img);
         }
       }
       ptr++;
     }
-    if(in_stripe){
+    if (in_stripe) {
       ++stripe.points;
       in_stripe = false;
-      //printf("Stripe: y: %1d, from %1d to %1d, %1d points;\n", 
-      //       stripe.vline, stripe.hstart, stripe.hstop, stripe.points);
-      //printf("sum: %6d, sum_x: %6d\n", stripe.sum, stripe.sum_x);
+      // printf("Stripe: y: %1d, from %1d to %1d, %1d points;\n",
+      //        stripe.vline, stripe.hstart, stripe.hstop, stripe.points);
+      // printf("sum: %6d, sum_x: %6d\n", stripe.sum, stripe.sum_x);
       ltr_int_add_stripe(&stripe, img);
       in_stripe = false;
     }
   }
-  //printf("\n");
+  // printf("\n");
 }
 
-int ltr_int_stripes_to_blobs(unsigned int num_blobs, struct bloblist_type *blt, 
-		     int min_pts, int max_pts, image_t *img)
-{
+int ltr_int_stripes_to_blobs(unsigned int num_blobs, struct bloblist_type *blt,
+                             int min_pts, int max_pts, image_t *img) {
   store_preblobs(true);
-  current.limit= 0;
+  current.limit = 0;
   next.limit = 0;
   current_vline = -2;
-  if(preblobs == NULL){
+  if (preblobs == NULL) {
     return -1;
   }
   unsigned int counter = 0;
-  unsigned int valid =0;
+  unsigned int valid = 0;
   iterator i;
   struct blob_type *cal_b;
   preblob_t *pb;
   ltr_int_init_iterator(preblobs, &i);
-  while((pb = (preblob_t*)ltr_int_get_next(&i)) != NULL){
-    if((pb->points < min_pts) || (pb->points > max_pts)){
+  while ((pb = (preblob_t *)ltr_int_get_next(&i)) != NULL) {
+    if ((pb->points < min_pts) || (pb->points > max_pts)) {
       continue;
     }
     ++valid;
-    if(counter < num_blobs){
-      //printf("sum_x %g   sum_y %g   sum %d\n", pb->sum_x, pb->sum_y, pb->sum);
+    if (counter < num_blobs) {
+      // printf("sum_x %g   sum_y %g   sum %d\n", pb->sum_x, pb->sum_y,
+      // pb->sum);
       float x = pb->sum_x / pb->sum;
       float y = pb->sum_y / pb->sum;
-      //printf("%f\t\t%f\t\t%d\n", x, y, pb->points);
+      // printf("%f\t\t%f\t\t%d\n", x, y, pb->points);
       cal_b = &(blt->blobs[counter]);
       cal_b->x = (((img->w - 1) / 2.0) - (x / img->ratio));
       cal_b->y = (((img->h - 1) / 2.0) - y);
-      if(img_dbg_flag == DBG_ON){
+      if (img_dbg_flag == DBG_ON) {
         ltr_int_log_message("PT: %g %g\n", cal_b->x, cal_b->y);
       }
-      if(img->bitmap != NULL){
-        if(counter < blt->expected_blobs){
-	  ltr_int_draw_cross(img, x / img->ratio, y, (int) img->w/50.0);
-	}else{
-          ltr_int_draw_cross(img, x / img->ratio, y, (int) img->w/100.0);
-	}
+      if (img->bitmap != NULL) {
+        if (counter < blt->expected_blobs) {
+          ltr_int_draw_cross(img, x / img->ratio, y, (int)img->w / 50.0);
+        } else {
+          ltr_int_draw_cross(img, x / img->ratio, y, (int)img->w / 100.0);
+        }
       }
       cal_b->score = pb->points;
     }
@@ -506,21 +487,17 @@ int ltr_int_stripes_to_blobs(unsigned int num_blobs, struct bloblist_type *blt,
   ltr_int_free_list(preblobs, true);
   preblobs = NULL;
   blt->num_blobs = (valid > num_blobs) ? num_blobs : valid;
-  //printf("Have %d blobs!\n", blt->num_blobs);
-  if((img_dbg_flag == DBG_ON) && (img->bitmap != NULL)){
+  // printf("Have %d blobs!\n", blt->num_blobs);
+  if ((img_dbg_flag == DBG_ON) && (img->bitmap != NULL)) {
     static int fc = 0;
     char name[] = "fXXXXXXX.data";
-    sprintf(name, "f%04d.data", fc++);
+    snprintf(name, sizeof(name), "f%04d.data", fc++);
     ltr_int_log_message("%s\n", name);
     FILE *f = fopen(name, "wb");
-    if(f != NULL){
+    if (f != NULL) {
       fwrite(img->bitmap, 1, img->w * img->h, f);
       fclose(f);
     }
   }
   return 0;
 }
-
-
-
-
