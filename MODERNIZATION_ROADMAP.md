@@ -578,7 +578,8 @@ After any modernization change, verify:
 - [ ] `cd src/qt_gui && qmake6 && make && sudo make install` (for Qt GUI)
 - [ ] `ldd` shows no missing libraries
 - [ ] RPATH points to correct location
-- [ ] `ltr_gui` launches and can configure devices
+- [ ] `ltr_gui` launches
+
 - [ ] **3D View** displays model (not black screen)
 - [ ] Tracking works in a test application
 - [ ] Wine bridge works with a Windows game (if applicable)
@@ -638,6 +639,23 @@ Create a lightweight Linux daemon (`ltr_hotkeyd`) that:
 - Could use `libevdev` for raw keyboard access
 - Or rely on compositor-specific protocols (KWin, wlroots)
 - Start simple: X11-only, with Wayland as stretch goal
+
+### Project LAL (Licensed Asset Loader)
+
+**Status:** 💡 Feasibility Study Complete (See `LAL_FEASIBILITY.md`)
+**Priority:** Medium
+**Use Case:** Legal, user-friendly installation of proprietary firmware and game DLLs.
+
+**Proposed Solution:**
+Create a data-driven system to replace the legacy `extractor.cpp`:
+1.  **Manifest:** `lal_manifest.json` defines assets (URLs, SHA256 hashes, file mappings).
+2.  **Manager:** `LALManager` checks installation status and performs native extraction (using `7z` or `cabextract` directly, NO Wine dependency).
+3.  **UI:** Unified "Assets" dashboard in `ltr_gui`.
+
+**Benefits:**
+- Removes "hacky" Wine dependency for firmware installation.
+- Clearly separates open-source code from proprietary assets.
+- Provides a verifiable chain of custody for downloaded binaries.
 
 ---
 
