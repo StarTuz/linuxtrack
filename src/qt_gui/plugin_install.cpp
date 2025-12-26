@@ -132,65 +132,102 @@ void PluginInstall::installLinuxtrackWine() {
   if (prefix.isEmpty())
     return;
 
-  QString instDirBase =
-      prefix + QString::fromUtf8("/drive_c/Program Files/Linuxtrack");
-  QDir().mkpath(instDirBase);
+  // Install to both Program Files paths for 32-bit and 64-bit compatibility
+  QStringList instDirs;
+  instDirs << prefix + QString::fromUtf8("/drive_c/Program Files/Linuxtrack")
+           << prefix +
+                  QString::fromUtf8("/drive_c/Program Files (x86)/Linuxtrack");
+
+  for (const QString &instDirBase : instDirs) {
+    QDir().mkpath(instDirBase);
+  }
 
   // Surgical Phase 1: Copy binaries directly to prefix
   // We rename .dll.so to .dll so Wine can load them as native Windows DLLs
-  // (PE-wrappers)
   struct {
     const char *src;
     const char *dst;
-  } files[] = {{"NPClient.dll.so", "NPClient.dll"},
-               {"NPClient64.dll.so", "NPClient64.dll"},
-               {"FreeTrackClient.dll.so", "FreeTrackClient.dll"},
-               {NULL, NULL}};
+    const char *subdir; // Subdirectory in wine_bridge
+  } files[] = {{"NPClient.dll.so", "NPClient.dll", "client"},
+               {"NPClient64.dll.so", "NPClient64.dll", "client"},
+               {"FreeTrackClient.dll.so", "FreeTrackClient.dll", "ft_client"},
+               {NULL, NULL, NULL}};
+
+  // Build a list of potential source directories
+  QStringList srcDirs;
+  QString appDir = QApplication::applicationDirPath();
+  srcDirs << appDir + QString::fromUtf8("/../lib/linuxtrack")
+          << appDir + QString::fromUtf8("/../lib")
+          << QString::fromUtf8("/opt/linuxtrack/lib/linuxtrack")
+          << QString::fromUtf8("/opt/linuxtrack/lib")
+          << appDir + QString::fromUtf8("/../share/linuxtrack");
+
+  // Also check the source build directories (for development)
+  srcDirs << appDir + QString::fromUtf8("/../../wine_bridge/client")
+          << appDir + QString::fromUtf8("/../../wine_bridge/ft_client")
+          << appDir + QString::fromUtf8("/../wine_bridge/client")
+          << appDir + QString::fromUtf8("/../wine_bridge/ft_client");
 
   for (int i = 0; files[i].src != NULL; ++i) {
-    QString srcPath = PREF.getLibPath(QString::fromUtf8(files[i].src));
-    // getLibPath might return name only or full path depending on build
-    if (!QFile::exists(srcPath)) {
-      srcPath =
-          PREF.getDataPath(QString::fromUtf8("../../wine_bridge/client/")) +
-          QString::fromUtf8(files[i].src);
-      if (!QFile::exists(srcPath)) {
-        srcPath = PREF.getDataPath(
-                      QString::fromUtf8("../../wine_bridge/ft_client/")) +
-                  QString::fromUtf8(files[i].src);
+    QString srcPath;
+
+    // Try to find the source file in various locations
+    for (const QString &dir : srcDirs) {
+      QString candidate =
+          dir + QString::fromUtf8("/") + QString::fromUtf8(files[i].src);
+      if (QFile::exists(candidate)) {
+        srcPath = candidate;
+        break;
       }
     }
 
-    QString dstPath =
-        instDirBase + QString::fromUtf8("/") + QString::fromUtf8(files[i].dst);
-    if (QFile::exists(srcPath)) {
-      if (QFile::exists(dstPath))
-        QFile::remove(dstPath);
-      if (QFile::copy(srcPath, dstPath)) {
-        ltr_int_log_message("Surgically injected %s to %s\n", files[i].src,
-                            qPrintable(dstPath));
-      } else {
-        ltr_int_log_message("Failed to copy %s to %s\n", files[i].src,
-                            qPrintable(dstPath));
+    // Also try getLibPath as fallback
+    if (srcPath.isEmpty()) {
+      QString libPath = PREF.getLibPath(QString::fromUtf8(files[i].src));
+      if (QFile::exists(libPath)) {
+        srcPath = libPath;
       }
+    }
+
+    if (!srcPath.isEmpty()) {
+      // Copy to both installation directories
+      for (const QString &instDirBase : instDirs) {
+        QString dstPath = instDirBase + QString::fromUtf8("/") +
+                          QString::fromUtf8(files[i].dst);
+        if (QFile::exists(dstPath))
+          QFile::remove(dstPath);
+        if (QFile::copy(srcPath, dstPath)) {
+          ltr_int_log_message("Surgically injected %s to %s\n", files[i].src,
+                              qPrintable(dstPath));
+        } else {
+          ltr_int_log_message("Failed to copy %s to %s\n", files[i].src,
+                              qPrintable(dstPath));
+        }
+      }
+    } else {
+      ltr_int_log_message("Warning: Could not find source file %s\n",
+                          files[i].src);
     }
   }
 
-  // Also copy firmware if available
+  // Also copy firmware if available - to both directories
   QString fwSrc =
       PREF.getRsrcDirPath() + QString::fromUtf8("/tir_firmware/TIRViews.dll");
-  QString fwDst = instDirBase + QString::fromUtf8("/TIRViews.dll");
   if (QFile::exists(fwSrc)) {
-    if (QFile::exists(fwDst))
-      QFile::remove(fwDst);
-    QFile::copy(fwSrc, fwDst);
+    for (const QString &instDirBase : instDirs) {
+      QString fwDst = instDirBase + QString::fromUtf8("/TIRViews.dll");
+      if (QFile::exists(fwDst))
+        QFile::remove(fwDst);
+      QFile::copy(fwSrc, fwDst);
+    }
   }
 
   // Surgical Phase 2: Registry Updates via native wine reg call
   // This bypasses the need for the NSIS installer's UI and Windows runtimes.
+  // Set keys for both 32-bit and 64-bit paths for maximum compatibility
   inst->setEnv(QString::fromUtf8("WINEPREFIX"), prefix);
 
-  // NaturalPoint key
+  // NaturalPoint key - 64-bit path
   QStringList npArgs;
   npArgs << QString::fromUtf8("add")
          << QString::fromUtf8(
@@ -202,7 +239,20 @@ void PluginInstall::installLinuxtrackWine() {
          << QString::fromUtf8("/f");
   inst->run(QString::fromUtf8("reg"), npArgs);
 
-  // FreeTrack key
+  // NaturalPoint key - 32-bit path (WoW6432Node for 32-bit apps on 64-bit Wine)
+  QStringList np32Args;
+  np32Args
+      << QString::fromUtf8("add")
+      << QString::fromUtf8(
+             "HKCU\\Software\\NaturalPoint\\NATURALPOINT\\NPClient Location")
+      << QString::fromUtf8("/v") << QString::fromUtf8("Path")
+      << QString::fromUtf8("/t") << QString::fromUtf8("REG_SZ")
+      << QString::fromUtf8("/d")
+      << QString::fromUtf8("C:\\Program Files (x86)\\Linuxtrack\\")
+      << QString::fromUtf8("/f") << QString::fromUtf8("/reg:32");
+  inst->run(QString::fromUtf8("reg"), np32Args);
+
+  // FreeTrack key - 64-bit
   QStringList ftArgs;
   ftArgs << QString::fromUtf8("add")
          << QString::fromUtf8("HKCU\\Software\\Freetrack\\FreetrackClient")
@@ -213,11 +263,24 @@ void PluginInstall::installLinuxtrackWine() {
          << QString::fromUtf8("/f");
   inst->run(QString::fromUtf8("reg"), ftArgs);
 
+  // FreeTrack key - 32-bit
+  QStringList ft32Args;
+  ft32Args << QString::fromUtf8("add")
+           << QString::fromUtf8("HKCU\\Software\\Freetrack\\FreetrackClient")
+           << QString::fromUtf8("/v") << QString::fromUtf8("Path")
+           << QString::fromUtf8("/t") << QString::fromUtf8("REG_SZ")
+           << QString::fromUtf8("/d")
+           << QString::fromUtf8("C:\\Program Files (x86)\\Linuxtrack\\")
+           << QString::fromUtf8("/f") << QString::fromUtf8("/reg:32");
+  inst->run(QString::fromUtf8("reg"), ft32Args);
+
   QMessageBox::information(
       NULL, QString::fromUtf8("Surgical Injection Complete"),
       QString::fromUtf8(
           "Linuxtrack support has been surgically injected into the prefix.\n\n"
-          "Target: C:\\Program Files\\Linuxtrack\\\n"
+          "Installed to:\n"
+          "  C:\\Program Files\\Linuxtrack\\\n"
+          "  C:\\Program Files (x86)\\Linuxtrack\\\n\n"
           "No Windows installers were required."));
 #else
   if (isTirFirmwareInstalled() && isMfc42uInstalled()) {
