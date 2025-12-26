@@ -10,6 +10,8 @@
 **Effort:** Medium (Architectural Refactoring + UI work)
 **Recommendation:** Proceed. It will significantly improve user experience and legal compliance by removing the dependency on "hacky" Wine-based extraction and providing a unified interface for proprietary assets.
 
+**Strategic Impact:** LAL positions Linuxtrack as a "neutral ground" for hardware vendors (e.g., Tobii, NaturalPoint) to support Linux via officially sanctioned binary packages without open-sourcing their core IP.
+
 The "Authorized/Licensed Asset Loader" (LAL) would replace the current hardcoded `TirFwExtractor` and `Mfc42uExtractor` classes with a **data-driven, generalized system** to manage proprietary dependencies (firmware, DLLs, game data).
 
 ---
@@ -37,6 +39,7 @@ Create a new module, `LAL` (Licensed Asset Loader), that standardizes this proce
 2.  **Native First:** Use Linux-native tools (`7z`, `cabextract`, `unshield`, `isolyzer`) to extract files. **Eliminate Wine runtime dependency for installation.**
 3.  **Data-Driven:** Define assets in a JSON manifest, not C++ code.
 4.  **Verifiable:** Strong SHA-256 hashing of installers and extracted artifacts.
+5.  **Vendor Friendly:** Allow vendors to provide a simple ZIP/TAR of their Linux binaries (blob) which LAL verifies and installs, bypassing the "extract from Windows installer" step entirely.
 
 ### 3.2 Architecture
 
@@ -66,6 +69,15 @@ A JSON file shipped with `ltr_gui` describing known assets.
           "NPClient.dll": "NPClient.dll"
         }
       }
+    },
+    {
+      "id": "tobii_et5_blob",
+      "name": "Tobii Eye Tracker 5 (Proprietary Driver)",
+      "version": "1.0.0-linux-beta",
+      "vendor": "Tobii",
+      "license_type": "Proprietary (Blob)",
+      "sources": [{ "type": "vendor_portal", "url": "https://tobii.com/linux/et5_blob.tar.gz" }],
+      "install_path": "~/.local/share/linuxtrack/drivers/tobii/"
     }
   ]
 }
@@ -85,10 +97,43 @@ A JSON file shipped with `ltr_gui` describing known assets.
 A clean list view:
 *   ✅ **TrackIR Firmware**: Installed
 *   ❌ **MFC42 Helper**: Missing (Download Interface generic button)
+*   ❌ **Tobii Driver**: Missing (Vendor Link)
 
 ---
 
-## 4. Implementation Steps
+## 4. Strategic Advantage: Vendor Partnership
+
+Hardware manufacturers (e.g., Tobii, NaturalPoint) face increasing pressure to support Linux (Steam Deck, gaming market growth) but are often hesitant to open-source their core IP (processing algorithms, precise device handshakes).
+
+**LAL offers a compromise:**
+1.  **"Blob" Support:** Vendors can release a closed-source binary driver (blob) for Linux.
+2.  **Standard Delivery:** LAL handles the download, verification, installation, and path management.
+3.  **Legal Safety:** The open-source project (Linuxtrack) never redistributes the code. The user downloads it directly from the vendor via LAL's interface.
+4.  **No "Hack" Stigma:** Instead of telling users "find a script on GitHub to extract files from a Windows EXE," vendors can say "Install Linuxtrack and click 'Install Tobii Driver'".
+
+*Example:* Tobii Gaming devices (Eye Tracker 5) currently lack official Linux support. Community workarounds exist but are fragmented. LAL could provide a stable, "officially sanctionable" target for Tobii to ship a simple Linux binary blob.
+
+---
+
+## 5. Safety & Preservation Strategy
+
+**Goal:** Innovate without breaking the solid foundation we have built (Surgical Injection, TrackIR reliability).
+
+### 5.1 Parallel Existence (Phase 1)
+*   **Do Not Delete:** The legacy `extractor.cpp` and `plugin_install.cpp` logic will remain untouched initially.
+*   **Opt-In:** LAL will be added as a "Beta Features" tab or a separate "Asset Manager" dialog.
+*   **Fallback:** If LAL fails to extract (e.g., `7z` missing, installer format changed), the system explicitly falls back to the legacy code.
+
+### 5.2 Non-Destructive Integration (Phase 2)
+*   **Wrappers:** The new `LALManager` can call the legacy code internally if a manifest entry is marked `legacy_method: true`.
+*   **Verification-Only:** LAL can initially just *verify* that the files extracted by the legacy system are correct, providing better diagnostics without taking over the extraction logic risk.
+
+### 5.3 Full Replacement (Phase 3 - Future)
+*   Only after LAL has been proven robust across multiple distros (Arch, Debian, Fedora) and device types will the legacy code be deprecated.
+
+---
+
+## 6. Implementation Steps
 
 ### Phase 1: Prototype (Discovery)
 1.  Verify `7z` (p7zip) can consistently extract `TrackIR_5.4.2.exe` without Wine. (Confirmed in current `extractor.cpp` logic).
@@ -109,16 +154,7 @@ A clean list view:
 
 ---
 
-## 5. Potential Risks
-
-*   **Installer Format Changes:** If NaturalPoint changes their installer from a 7z-compatible archive to something obscure (InstallShield), we might need `unshield` or stick to Wine for that specific case.
-    *   *Mitigation:* LAL extraction method can be extensible ("native-7z", "native-cab", "wine-fallback").
-*   **Dependency on 7z:** Users must install `p7zip` / `7-zip`.
-    *   *Mitigation:* Check for tool availability at runtime and warn user.
-
----
-
-## 6. Conclusion
+## 7. Conclusion
 
 Implementing LAL is the correct next step for a "modern" Linuxtrack. It aligns with the goal of **removing fragility** and **improving the user experience**. It turns a "hacky script" effectively into a "Package Manager for Proprietary Drivers".
 
