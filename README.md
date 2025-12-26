@@ -8,6 +8,7 @@ This is a modernized fork of the [Linuxtrack](https://github.com/uglyDwarf/linux
 
 Unlike other legacy forks, this version addresses deep technical debt to ensure long-term stability:
 
+- **Native Firmware Manager (LAL)**: New "Manage Assets" GUI allows legal, drag-and-drop installation of proprietary TrackIR/SmartNav firmware without needing Wine or external tools.
 - **Surgical Wine Injection**: No more fragile `.exe` installers! Directly inject bridge DLLs into Wine/Proton prefixes with one click.
 - **Proton-Aware Environment**: Automatically configures `PROTON_NO_FSYNC` and `PROTON_NO_ESYNC` to prevent race conditions and tracking stutters in games like *Elite Dangerous*.
 - **Qt6 & Wayland Support**: Fully ported from Qt4/5 to Qt6. Removed `QtX11Extras` to allow the GUI to run natively on Wayland.
@@ -48,6 +49,7 @@ Current progress is tracked in [MODERNIZATION_ROADMAP.md](MODERNIZATION_ROADMAP.
 - [x] Modern OpenGL Shader-based 3D View.
 - [x] Bison/Flex to mINI migration.
 - [x] Surgical Wine/Proton Bridge Injection.
+- [x] Project LAL (Native Firmware Manager) Phase 3 Integration.
 - [x] Automatic Steam/Proton/Lutris/Bottles Prefix Discovery.
 - [x] Controller.exe for customizable Pause/Recenter hotkeys.
 
