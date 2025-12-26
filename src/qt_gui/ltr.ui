@@ -168,6 +168,13 @@
               </property>
              </widget>
             </item>
+            <item row="1" column="1">
+             <widget class="QPushButton" name="LALButton">
+              <property name="text">
+               <string>Manage Assets (LAL)...</string>
+              </property>
+             </widget>
+            </item>
            </layout>
           </item>
           <item>

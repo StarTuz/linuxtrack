@@ -2,7 +2,7 @@
 #define LTR_GUI__H
 
 #ifdef HAVE_CONFIG_H
-  #include "../../config.h"
+#include "../../config.h"
 #endif
 
 #include <QCloseEvent>
@@ -14,9 +14,9 @@
 class LtrGuiForm;
 class LtrDevHelp;
 class ModelEdit;
-//class LtrTracking;
+// class LtrTracking;
 class LogView;
-//class ScpForm;
+// class ScpForm;
 class QSettings;
 class HelpViewer;
 class PluginInstall;
@@ -25,19 +25,19 @@ class ProfileSelector;
 class Guardian;
 class XPluginInstall;
 
-class LinuxtrackGui : public QWidget
-{
+class LinuxtrackGui : public QWidget {
   Q_OBJECT
- public:
+public:
   LinuxtrackGui(QWidget *parent = 0);
   ~LinuxtrackGui();
- protected:
+
+protected:
   void closeEvent(QCloseEvent *event);
- public slots:
+public slots:
   void show();
- private slots:
+private slots:
   void on_QuitButton_pressed();
-  //void on_EditSCButton_pressed();
+  // void on_EditSCButton_pressed();
   void on_SaveButton_pressed();
   void on_DefaultsButton_pressed();
   void on_DiscardChangesButton_pressed();
@@ -51,16 +51,18 @@ class LinuxtrackGui : public QWidget
   void on_ViewLogButton_pressed();
   void on_XplanePluginButton_pressed();
   void on_PackageLogsButton_pressed();
+  void on_LALButton_pressed();
   void logsPackaged(int exitCode, QProcess::ExitStatus exitStatus);
- private:
+
+private:
   Ui::LinuxtrackMainForm ui;
   LtrGuiForm *showWindow;
   LtrDevHelp *helper;
   DeviceSetup *ds;
   ModelEdit *me;
   Guardian *grd;
-  //LtrTracking *track;
-  //ScpForm *sc;
+  // LtrTracking *track;
+  // ScpForm *sc;
   LogView *lv;
   PluginInstall *pi;
   ProfileSelector *ps;
