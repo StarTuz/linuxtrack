@@ -6,7 +6,7 @@ endif #WINE_PLUGIN
 if DARWIN
   LDFLAGS += -Wl,-no_arch_warnings
 else
-  LDFLAGS += -Wl,--no-warn-search-mismatch
+  LDFLAGS += -Wl,--no-warn-search-mismatch -Wl,-rpath,/opt/linuxtrack/lib/linuxtrack -Wl,-rpath,'$$ORIGIN/../../.libs'
 endif
 
 CC = winegcc

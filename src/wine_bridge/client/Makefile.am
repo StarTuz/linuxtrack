@@ -9,7 +9,7 @@ endif #WINE_PLUGIN
 if DARWIN
   LDFLAGS += -Wl,-no_arch_warnings
 else
-  LDFLAGS += -Wl,--no-warn-search-mismatch
+  LDFLAGS += -Wl,--no-warn-search-mismatch -Wl,-rpath,/opt/linuxtrack/lib/linuxtrack -Wl,-rpath,'$$ORIGIN/../../.libs'
 endif
 
 CC = winegcc
@@ -49,7 +49,7 @@ NPClient.dll.so : NPClient.spec NPClient_main.o linuxtrack.o rest.o
 	winegcc $(WINE_LIBS) $(LDFLAGS) -m32 -Wall -Wextra -g -o $@ -shared $^ -ldl
 
 NPClient64.dll.so : NPClient.spec NPClient_main64.o linuxtrack64.o rest64.o
-	winegcc  $(WINE64_LIBS) $(LDFLAGbS)  -Wall -Wextra -g -o $@ -shared $^ -ldl
+	winegcc  $(WINE64_LIBS) $(LDFLAGS)  -Wall -Wextra -g -o $@ -shared $^ -ldl
 
 check_data.o : check_data.c rest.h
 

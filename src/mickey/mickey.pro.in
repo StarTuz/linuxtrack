@@ -20,6 +20,11 @@ contains(QT_VERSION, ^5.*){
        DEFINES += QT5_OVERRIDES
 }
 
+contains(QT_VERSION, ^6.*){
+       QT += widgets gui
+       DEFINES += QT6_OVERRIDES
+}
+
 QT += help
 
 RESOURCES = mickey.qrc

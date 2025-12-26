@@ -16,7 +16,7 @@ if DARWIN
   FT_LDFLAGS =
 else
   LINUXFLAGS = '-DLIB_PATH="$(pkglibdir)/"'
-  LINUXLDLFAGS = '-Wl,-rpath,$(pkglibdir)'
+  LINUXLDFLAGS = '-Wl,-rpath,$$ORIGIN/../lib/linuxtrack'
   SYSFLAGS = -DIBM=0 -DAPL=0 -DLIN=1
   QMAKE_FLAGS = -spec linux-g++
   LIBLINUXTRACK_FLAGS = -fpic -fPIC
@@ -24,7 +24,7 @@ else
   XLINUXTRACK_CFLAGS =
   XLINUXTRACK_LDFLAGS =  -L/lib32 -L/usr/lib32 -Wl,--no-warn-search-mismatch
   ltr_pipe_CPPFLAGS = -DLINUX
-  FT_LDFLAGS = '-Wl,-rpath,$(libdir)'
+  FT_LDFLAGS = '-Wl,-rpath,$$ORIGIN/../lib'
 endif
 
 man_MANS = ltr_gui.1 ltr_server1.1 mickey.1
@@ -114,8 +114,9 @@ liblinuxtrack_la_CFLAGS = ${AM_CFLAGS} $(LIBLINUXTRACK_FLAGS) $(LINUXFLAGS)
 liblinuxtrack_la_LDFLAGS = -export-symbols "${srcdir}/liblt.sym" ${SLEOPARD_LDFLAG}
 
 libltr_la_SOURCES = ../config.h cal.c cal.h list.c list.h dyn_load.c dyn_load.h\
-  math_utils.c math_utils.h pose.c pose.h pref.cpp pref.hpp pref.h pref_bison.ypp \
-  pref_bison.hpp pref_flex.lpp pref_global.c pref_global.h \
+  math_utils.c math_utils.h pose.c pose.h pref.cpp modern_prefs.cpp modern_prefs.h \
+  mini_ini.h pref.hpp pref.h \
+  pref_global.c pref_global.h \
   utils.c utils.h image_process.c image_process.h tracking.c tracking.h \
   ltlib_int.c ltlib_int.h spline.c spline.h axis.c axis.h wii_driver_prefs.c \
   wii_driver_prefs.h tir_driver_prefs.c tir_driver_prefs.h wc_driver_prefs.c \

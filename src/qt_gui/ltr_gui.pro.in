@@ -19,6 +19,10 @@ contains(QT_VERSION, ^5.*){
        QT += widgets
 }
 
+contains(QT_VERSION, ^6.*){
+       QT += widgets openglwidgets
+}
+
 VPATH     = @srcdir@
 
 PRECOMPILED_HEADER = precomp_headers.h

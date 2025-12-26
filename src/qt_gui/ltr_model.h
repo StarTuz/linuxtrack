@@ -3,132 +3,149 @@
 
 #include <QObject>
 #include <QString>
+#include <QtGlobal>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRegularExpressionValidator>
+#else
+#include <QRegExpValidator>
+#endif
+#include "ui_cap_edit.h"
+#include "ui_cap_tweaking.h"
+#include "ui_clip_edit.h"
+#include "ui_clip_tweaking.h"
 #include "ui_model_creation.h"
 #include "ui_model_edit.h"
-#include "ui_cap_edit.h"
-#include "ui_clip_edit.h"
 #include "ui_single_edit.h"
-#include "ui_clip_tweaking.h"
-#include "ui_cap_tweaking.h"
 
-typedef enum {MDL_1PT, MDL_3PT_CLIP, MDL_3PT_CAP, MDL_FACE, MDL_ABSOLUTE} modelType_t;
+typedef enum {
+  MDL_1PT,
+  MDL_3PT_CLIP,
+  MDL_3PT_CAP,
+  MDL_FACE,
+  MDL_ABSOLUTE
+} modelType_t;
 class Guardian;
 
-class ModelCreate : public QDialog
-{
+class ModelCreate : public QDialog {
   Q_OBJECT
- public:
+public:
   ModelCreate(QWidget *parent = 0);
   ~ModelCreate();
- protected:
- signals:
+
+protected:
+signals:
   void ModelCreated(const QString &section);
- public slots:
+public slots:
   int exec();
- private slots:
+private slots:
   void on_ModelTypeCombo_currentIndexChanged(int index);
   void on_CancelButton_pressed();
   void on_CreateButton_pressed();
- signals:
+signals:
   void dump(const QString &sec);
- private:
+
+private:
   void removeEditor();
   void activateEditor(QWidget *editor);
   Ui::ModelCreation ui;
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  QRegularExpressionValidator *validator;
+#else
   QRegExpValidator *validator;
+#endif
   QWidget *modelEditor;
 };
 
-class ModelEdit : public QWidget
-{
+class ModelEdit : public QWidget {
   Q_OBJECT
- public:
+public:
   ModelEdit(Guardian *grd, QWidget *parent = 0);
   ~ModelEdit();
   void refresh();
- protected:
- private slots:
+
+protected:
+private slots:
   void on_CreateModelButton_pressed();
   void ModelCreated(const QString &section);
   void on_ModelSelector_activated(const QString &text);
- signals:
+signals:
   void modelSelected(int modelType);
- private:
+
+private:
   Ui::ModelEditForm ui;
   QWidget *modelTweaker;
-  //void Connect();
+  // void Connect();
   ModelCreate *mcw;
   QString currentSection;
   bool initializing;
 };
 
-class CapEdit : public QWidget
-{
+class CapEdit : public QWidget {
   Q_OBJECT
- public:
+public:
   CapEdit(QWidget *parent = 0);
   ~CapEdit();
   void refresh();
- public slots:
+public slots:
   void dump(const QString &sec);
- private:
+
+private:
   Ui::CapEditForm ui;
 };
 
-
-class ClipEdit : public QWidget
-{
+class ClipEdit : public QWidget {
   Q_OBJECT
- public:
+public:
   ClipEdit(QWidget *parent = 0);
   ~ClipEdit();
- public slots:
+public slots:
   void dump(const QString &sec);
- private:
+
+private:
   Ui::ClipEditForm ui;
 };
 
-class SingleEdit : public QWidget
-{
+class SingleEdit : public QWidget {
   Q_OBJECT
- public:
+public:
   SingleEdit(QWidget *parent = 0);
   ~SingleEdit();
- public slots:
+public slots:
   void dump(const QString &sec);
- private:
+
+private:
   Ui::SingleEditForm ui;
 };
 
-class ClipTweaking : public QWidget
-{
+class ClipTweaking : public QWidget {
   Q_OBJECT
- public:
+public:
   ClipTweaking(const QString &section, QWidget *parent = 0);
   ~ClipTweaking();
- public slots:
+public slots:
   void on_ClipHx_valueChanged(int val);
   void on_ClipHy_valueChanged(int val);
   void on_ClipHz_valueChanged(int val);
   void on_ClipLeft_toggled();
   void on_ClipRight_toggled();
- private:
+
+private:
   Ui::ClipTweakingForm ui;
   QString currentSection;
   bool initializing;
   void tweakHx();
 };
 
-class CapTweaking : public QWidget
-{
+class CapTweaking : public QWidget {
   Q_OBJECT
- public:
+public:
   CapTweaking(const QString &section, QWidget *parent = 0);
   ~CapTweaking();
- public slots:
+public slots:
   void on_CapHy_valueChanged(int val);
   void on_CapHz_valueChanged(int val);
- private:
+
+private:
   Ui::CapTweakingForm ui;
   QString currentSection;
   bool initializing;

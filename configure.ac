@@ -3,6 +3,12 @@
 
 AC_PREREQ([2.71])
 AC_INIT([LinuxTrack],[0.99.20],[https://github.com/uglyDwarf/linuxtrack/issues])
+
+# Set default installation prefix to /opt/linuxtrack
+# This is the expected location for linuxtrack and ensures RPATH consistency
+# Users can still override with --prefix=/custom/path
+AC_PREFIX_DEFAULT([/opt/linuxtrack])
+
 AM_INIT_AUTOMAKE([subdir-objects no-dependencies -Wall -Werror])
 AC_CONFIG_SRCDIR([src/tir4_driver.h])
 AC_CONFIG_HEADERS([config.h])
@@ -40,8 +46,8 @@ AC_CHECK_LIB([pthread], [pthread_create], [LIBPTHREAD=true], [AC_MSG_FAILURE([li
 AC_CHECK_LIB([mxml], [mxmlNewXML], [LIBMXML=true], [AC_MSG_FAILURE([libmxml not found!])], [-pthread])
 AC_CHECK_HEADER([mxml.h], [], [AC_MSG_FAILURE([mxml.h is needed for ltr_gui compilation!])])
 
-# Qt is needed for the GUI
-AC_PATH_PROGS(QMAKE_PATH, [qmake qmake-qt4])
+# Qt is needed for the GUI - try Qt6 first, then fall back to Qt5/Qt4
+AC_PATH_PROGS(QMAKE_PATH, [qmake6 qmake-qt6 qmake qmake-qt5 qmake-qt4])
 
 
 # used to decompress the TrackIR firmware, if necessary

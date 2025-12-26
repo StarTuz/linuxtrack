@@ -1,11 +1,4 @@
 #if defined __cplusplus
-#include <cassert>
-#include <cmath>
-#include <cstdio>
-#include <cstdlib>
-#include <cstring>
-#include <iostream> 
-#include <map>
 #include <QApplication>
 #include <QByteArray>
 #include <QCheckBox>
@@ -21,7 +14,12 @@
 #include <QFileDialog>
 #include <QFileInfo>
 #include <QFileSystemWatcher>
+#include <QtGlobal>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QOpenGLWidget>
+#else
 #include <QGLWidget>
+#endif
 #include <QGraphicsPixmapItem>
 #include <QGraphicsScene>
 #include <QGraphicsView>
@@ -43,21 +41,21 @@
 #include <QPlainTextEdit>
 #include <QProcess>
 #include <QProcessEnvironment>
+#include <QtGlobal>
+#include <cassert>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+#include <iostream>
+#include <map>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRegularExpression>
+#include <QRegularExpressionValidator>
+#else
 #include <QRegExp>
 #include <QRegExpValidator>
-#include <QRgb>
-#include <QSettings>
-#include <QSplitter>
-#include <QString>
-#include <QStringList>
-#include <QtCore/qglobal.h>
-#include <QtCore/QVariant>
-#include <QTabWidget>
-#include <QtDebug>
-#include <QTemporaryFile>
-#include <QTextBrowser>
-#include <QTextStream>
-#include <QtGui>
+#endif
 #include <QAction>
 #include <QApplication>
 #include <QButtonGroup>
@@ -70,31 +68,38 @@
 #include <QGroupBox>
 #include <QHBoxLayout>
 #include <QHeaderView>
+#include <QHelpContentWidget>
+#include <QHelpEngine>
 #include <QLabel>
 #include <QLineEdit>
 #include <QPlainTextEdit>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QRadioButton>
+#include <QRgb>
+#include <QSettings>
 #include <QSlider>
 #include <QSpacerItem>
 #include <QSpinBox>
+#include <QSplitter>
+#include <QString>
+#include <QStringList>
 #include <QTabWidget>
-#include <QVBoxLayout>
-#include <QWidget>
-#include <QThread>
+#include <QTemporaryFile>
+#include <QTextBrowser>
+#include <QTextStream>
 #include <QThread>
 #include <QTime>
 #include <QTimer>
-#include <QtNetwork/QNetworkReply>
-#include <QtOpenGL>
 #include <QVBoxLayout>
 #include <QVector>
 #include <QWidget>
+#include <QtCore/QVariant>
+#include <QtCore/qglobal.h>
+#include <QtDebug>
+#include <QtGui>
+#include <QtNetwork/QNetworkReply>
+#include <QtOpenGL>
 #include <sstream>
 #include <vector>
-#include <QSplitter>
-#include <QHelpEngine>
-#include <QHelpContentWidget>
 #endif
-
