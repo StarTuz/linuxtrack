@@ -409,6 +409,7 @@ libcwiid                 # Wiimote support
 | `ltr_recenter` | Recenter command utility |
 | `osc_server` | OSC protocol server |
 | `mickey` | Mouse control application |
+| `ltr_udp` | X4: Foundations (OpenTrack UDP) bridge |
 
 ### Wine Bridge (in `src/wine_bridge/`)
 
