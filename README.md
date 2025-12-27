@@ -30,7 +30,7 @@ Unlike other legacy forks, this version addresses deep technical debt to ensure 
 
 ```bash
 mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=/usr/local ..
+cmake -DCMAKE_INSTALL_PREFIX=/opt/linuxtrack ..
 make -j$(nproc)
 sudo make install
 ```
