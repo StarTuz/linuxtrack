@@ -80,6 +80,10 @@ void GLWidget::objectsRead() {
   objectsLoaded = true;
   if (glInitialized && program && program->isLinked()) {
     std::cerr << "OpenGL context ready, building buffers...\n";
+    if (!isValid()) {
+      std::cerr << "GLWidget not valid yet, building buffers later.\n";
+      return;
+    }
     makeCurrent();
     if (makeObjects()) {
       std::cerr << "Buffers built successfully! Vertex count: " << vertexCount
@@ -327,6 +331,7 @@ void GLWidget::paintGL() {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 // Modern OpenGL makeObjects for Qt6
 bool GLWidget::makeObjects() {
+  QMutexLocker locker(&object_table_mutex);
   if (object_table.empty())
     return false;
 
