@@ -145,7 +145,17 @@ void LinuxtrackGui::show() {
   std::cerr << "LinuxtrackGui: Processing pending events before show()..."
             << std::endl;
   QCoreApplication::processEvents();
+  std::cerr << "LinuxtrackGui: Enumerating children before show()..."
+            << std::endl;
+  for (QObject *child : children()) {
+    QWidget *w = qobject_cast<QWidget *>(child);
+    if (w) {
+      std::cerr << "  Child widget: " << w->metaObject()->className()
+                << " visible=" << w->isVisible() << " ptr=" << w << std::endl;
+    }
+  }
   std::cerr << "LinuxtrackGui: Calling QWidget::show()..." << std::endl;
+  std::cerr.flush();
   QWidget::show();
   std::cerr << "LinuxtrackGui: QWidget::show() returned." << std::endl;
   if (welcome) {
