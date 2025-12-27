@@ -21,8 +21,7 @@ Unlike other legacy forks, this version addresses deep technical debt to ensure 
 - ✅ **DCS World** (Proton, with Controller.exe hotkeys)
 - ✅ **Elite Dangerous** (Proton 10/Steam Launcher)
 - ✅ **X-Plane 12** (Native Linux Plugin)
-- ✅ **IL-2 Sturmovik: Great Battles** (Proton)
-- ✅ **Assetto Corsa** (Proton)
+- ✅ **X4 Foundations** (Via ltr_udp)
 
 ## 🛠️ Installation
 
@@ -39,6 +38,7 @@ sudo make install
 ### 2. AppImage Distribution
 **Generic AppImage:** The generic CI build is currently experimental due to Qt6 ABI complexity.
 **Arch Linux AppImage:** A verified, working AppImage (built against Arch system Qt) is available. This version uses the host system's Qt libraries for maximum compatibility on rolling release distros.
+
 
 ### 3. Configure Wine/Proton Support
 1. Open `ltr_gui`.
