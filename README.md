@@ -32,7 +32,7 @@ Unlike other legacy forks, this version addresses deep technical debt to ensure 
 git clone https://github.com/StarTuz/linuxtrack.git
 cd linuxtrack
 mkdir build && cd build
-cmake -DCMAKE_INSTALL_PREFIX=/opt/linuxtrack ..
+cmake ..
 make -j$(nproc)
 sudo make install
 ```
