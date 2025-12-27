@@ -72,6 +72,7 @@ echo "Using qmake: $QMAKE"
 # --appdir: target AppDir
 # --plugin qt: use Qt plugin to bundle Qt libs
 # --output appimage: create the actual file
+export LD_LIBRARY_PATH="$(pwd)/$APP_DIR/usr/lib:$(pwd)/$APP_DIR/usr/lib/linuxtrack:$LD_LIBRARY_PATH"
 "$LINUXDEPLOY" --appdir "$APP_DIR" \
     --desktop-file "$APP_DIR/usr/share/applications/$APP_NAME.desktop" \
     --icon-file "$APP_DIR/usr/share/icons/hicolor/scalable/apps/$APP_NAME.svg" \
