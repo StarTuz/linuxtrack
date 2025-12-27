@@ -91,13 +91,15 @@ Fix Linuxtrack to compile on modern Linux systems and add native game support.
 The project now compiles successfully on modern Linux with:
 - GCC 14.x
 - Wine 9.x  
-- Qt 5.x/6.x
+- Qt 6.x
 - OpenCV 4.x
-- Autotools (automake 1.18, autoconf 2.72)
+- CMake (Standard build system)
 
 **Recent Additions (2025-12-26):**
 - **Native Games Support:** ltr_udp bridge for X4: Foundations and other OpenTrack-compatible games
-- **Global Hotkeys:** ltr_hotkeyd daemon for recenter/pause without alt-tabbing  
+- **Global Hotkeys:** ltr_hotkeyd daemon for recenter/pause without alt-tabbing
+- **CI Modernization:** Fully automated AppImage build via GitHub Actions, including 32-bit Wine support (multi-pass build).
+- **Codebase Cleanup:** Fixed relative includes for robust out-of-tree compilation.  
 - **Hotkey GUI:** ltr_hotkey_gui for configuring hotkeys (similar to Controller.exe for Wine)
 - **Profile Management:** "New Profile" button in ltr_gui for creating custom profiles
 - **Build Cleanup:** Removed stale pre-generated ui_*.h and moc_*.cpp files from source tree

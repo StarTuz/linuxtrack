@@ -72,7 +72,7 @@ jobs:
         run: |
           chmod +x packaging/appimage/make_appimage.sh
           # Inject 32-bit library copy into make_appimage.sh before linuxdeploy runs
-          sed -i '/Setting up AppImage resources/a mkdir -p "$APP_DIR/usr/lib/linuxtrack/" && cp -v ../dist32/*.so "$APP_DIR/usr/lib/linuxtrack/" 2>/dev/null || true' packaging/appimage/make_appimage.sh
+          sed -i '/Setting up AppImage resources/a mkdir -p "$APP_DIR/usr/lib/linuxtrack/" && cp -v dist32/*.so "$APP_DIR/usr/lib/linuxtrack/" 2>/dev/null || true' packaging/appimage/make_appimage.sh
           ./packaging/appimage/make_appimage.sh
 
       - name: Upload AppImage

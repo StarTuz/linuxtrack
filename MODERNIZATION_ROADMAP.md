@@ -555,7 +555,7 @@ int x = static_cast<int>(y);
 | Runtime validation | P1 | ✅ | 30 min | Better error messages |
 | Format specifiers | P1 | ✅ | 15 min | Cleanup warnings |
 | Qt6 support | P2 | ✅ | 4-6 hrs | Ported 3D view to Modern OpenGL/Shaders |
-| GitHub Actions CI | P2 | ✅ | 1 hr | Automated testing |
+| GitHub Actions CI | P2 | ✅ | 1 hr | Automated testing (Fixed AppImage multiarch) |
 | Wine Prefix Discovery | P1 | ✅ | 2 hrs | Automatic Steam/Lutris/Bottles detection |
 | Surgical Wine Injection | P1 | ✅ | 2 hrs | Bypass NSIS installer, install to both PF directories |
 | Controller.exe Hotkeys | P1 | ✅ | 30 min | Include Controller.exe for Pause/Recenter |
@@ -565,8 +565,8 @@ int x = static_cast<int>(y);
 | **Phase 2: std::mutex** | P3 | ✅ | 1 hr | Thread safety, 3 files |
 | **Phase 3: Smart Ptrs** | P3 | ✅ | 30 min | glwidget.cpp done, singletons skipped |
 | **Phase 4: Unit Tests** | P3 | ✅ | 2 hrs | Catch2 + modern_prefs tests |
-| **Phase 5: CMake** | P3 | 🔄 | 8-16 hrs | Core Backbone Complete (lib + drivers) |
-| Linux Hotkey Daemon | P4 | 💡 | 4-8 hrs | Future: Native global hotkeys |
+| **Phase 5: CMake** | P3 | ✅ | 8-16 hrs | Complete (Core + GUI + Wine + All Drivers) |
+| Linux Hotkey Daemon | P4 | ✅ | 4-8 hrs | Native global hotkeys (ltr_hotkeyd + GUI) |
 
 ---
 
