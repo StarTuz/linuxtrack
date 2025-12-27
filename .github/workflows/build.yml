@@ -22,12 +22,13 @@ jobs:
 
       - name: Install dependencies
         run: |
+          sudo dpkg --add-architecture i386
           sudo apt-get update
           sudo apt-get install -y \
             build-essential cmake ninja-build \
             libmxml-dev libusb-1.0-0-dev zlib1g-dev \
             libv4l-dev liblo-dev libopencv-dev \
-            wine64-tools wine-stable \
+            wine64-tools wine-stable wine32 libwine-dev libwine-dev:i386 \
             wget file gcc-multilib g++-multilib
 
       - name: Install Qt6 dependencies

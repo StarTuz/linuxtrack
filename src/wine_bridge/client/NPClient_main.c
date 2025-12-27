@@ -45,7 +45,7 @@ static void dbg_report(const char *msg, ...) {
 }
 
 BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserved) {
-  TRACE("(0x%p, %ld, %p)\n", hinstDLL, fdwReason, lpvReserved);
+  TRACE("(0x%p, %lu, %p)\n", hinstDLL, fdwReason, lpvReserved);
   thisDll = hinstDLL;
   switch (fdwReason) {
 #ifdef DLL_WINE_PREATTACH
