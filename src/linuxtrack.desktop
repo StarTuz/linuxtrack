@@ -9,3 +9,19 @@ Type=Application
 Categories=Game;
 StartupNotify=false
 Keywords=headtracking;
+Actions=Recenter;Pause;HotkeyConfig;
+
+[Desktop Action Recenter]
+Name=Recenter Tracking
+Exec=ltr_recenter
+Icon=linuxtrack
+
+[Desktop Action Pause]
+Name=Toggle Pause
+Exec=sh -c "if pgrep ltr_gui >/dev/null; then ltr_recenter --toggle; fi"
+Icon=media-playback-pause
+
+[Desktop Action HotkeyConfig]
+Name=Configure Hotkeys (Native)
+Exec=ltr_hotkey_gui
+Icon=input-gaming
