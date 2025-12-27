@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-#include "config.h"
+  #include "config.h"
 #endif
 
 #include "device_setup.h"
@@ -7,84 +7,83 @@
 #include "macwebcam_prefs.h"
 #include "macwebcamft_prefs.h"
 #else
-#include "joy_prefs.h"
-#include "webcam_ft_prefs.h"
 #include "webcam_prefs.h"
+#include "webcam_ft_prefs.h"
+#include "joy_prefs.h"
 #endif
-#include "guardian.h"
-#include "help_view.h"
-#include "ltr_gui_prefs.h"
 #include "macps3eye_prefs.h"
 #include "macps3eyeft_prefs.h"
 #include "tir_prefs.h"
-#include "tracking.h"
 #include "wiimote_prefs.h"
-#include <QPaintEvent>
-#include <QShowEvent>
+#include "help_view.h"
+#include "ltr_gui_prefs.h"
+#include "guardian.h"
+#include "tracking.h"
 #include <iostream>
+
 
 /* Coding:
             bit0 (lsb) - invert camera X values
             bit1       - invert camera Y values
             bit2       - switch X and Y values (applied first!)
-            bit4       - invert pitch, roll, X and Z translations (for tracking
-   from behind)
+            bit4       - invert pitch, roll, X and Z translations (for tracking from behind)
 */
 
 QString DeviceSetup::descs[8] = {
-    QString::fromUtf8("Normal"),                        // 0
-    QString::fromUtf8("Top to the right"),              // 6
-    QString::fromUtf8("Upside-down"),                   // 3
-    QString::fromUtf8("Top to the left"),               // 5
-    QString::fromUtf8("Normal, from behind"),           // 8
-    QString::fromUtf8("Top to the right, from behind"), // 14
-    QString::fromUtf8("Upside-down, from behind"),      // 11
-    QString::fromUtf8("Top to the left, from behind")   // 12
-};
+    QString::fromUtf8("Normal"),                        //0
+    QString::fromUtf8("Top to the right"),              //6
+    QString::fromUtf8("Upside-down"),                   //3
+    QString::fromUtf8("Top to the left"),               //5
+    QString::fromUtf8("Normal, from behind"),           //8
+    QString::fromUtf8("Top to the right, from behind"), //14
+    QString::fromUtf8("Upside-down, from behind"),      //11
+    QString::fromUtf8("Top to the left, from behind")   //12
+  };
 
-// int DeviceSetup::orientValues[] = {0, 6, 3, 5, 8, 14, 11, 13};
-int DeviceSetup::orientValues[] = {
-    ORIENT_NOP,                                           // 0
-    ORIENT_FLIP_Y | ORIENT_XCHG_XY,                       // 6
-    ORIENT_FLIP_X | ORIENT_FLIP_Y,                        // 3
-    ORIENT_FLIP_X | ORIENT_XCHG_XY,                       // 5
-    ORIENT_FROM_BEHIND,                                   // 8
-    ORIENT_FLIP_Y | ORIENT_XCHG_XY | ORIENT_FROM_BEHIND,  // 14
-    ORIENT_FLIP_X | ORIENT_FLIP_Y | ORIENT_FROM_BEHIND,   // 11
-    ORIENT_FLIP_X | ORIENT_XCHG_XY | ORIENT_FROM_BEHIND}; // 13
+//int DeviceSetup::orientValues[] = {0, 6, 3, 5, 8, 14, 11, 13};
+int DeviceSetup::orientValues[] = {ORIENT_NOP, // 0
+                                   ORIENT_FLIP_Y | ORIENT_XCHG_XY, // 6
+                                   ORIENT_FLIP_X | ORIENT_FLIP_Y, // 3
+                                   ORIENT_FLIP_X | ORIENT_XCHG_XY, //5
+                                   ORIENT_FROM_BEHIND, // 8
+                                   ORIENT_FLIP_Y | ORIENT_XCHG_XY | ORIENT_FROM_BEHIND, // 14
+                                   ORIENT_FLIP_X | ORIENT_FLIP_Y  | ORIENT_FROM_BEHIND, // 11
+                                   ORIENT_FLIP_X | ORIENT_XCHG_XY | ORIENT_FROM_BEHIND}; // 13
 
 DeviceSetup::DeviceSetup(Guardian *grd, QBoxLayout *tgt, QWidget *parent)
-    : QWidget(parent), devPrefs(nullptr), target(tgt) {
+  : QWidget(parent), devPrefs(nullptr), target(tgt)
+{
   grd->regTgt(this);
   ui.setupUi(this);
   on_RefreshDevices_pressed();
   initOrientations();
 }
 
-DeviceSetup::~DeviceSetup() {
-  if (devPrefs != nullptr) {
+DeviceSetup::~DeviceSetup()
+{
+  if(devPrefs != nullptr){
     target->removeWidget(devPrefs);
     delete devPrefs;
     devPrefs = nullptr;
   }
 }
 
-void DeviceSetup::initOrientations() {
+void DeviceSetup::initOrientations()
+{
   int i;
   int orientVal = 0;
   int orientIndex = 0;
 
   QString orient;
-  if (PREF.getKeyVal(QString::fromUtf8("Global"),
-                     QString::fromUtf8("Camera-orientation"), orient)) {
-    orientVal = orient.toInt();
+  if(PREF.getKeyVal(QString::fromUtf8("Global"), QString::fromUtf8("Camera-orientation"), orient)){
+    orientVal=orient.toInt();
   }
 
-  // Initialize Orientations combobox and lookup saved val
+  //Initialize Orientations combobox and lookup saved val
   ui.CameraOrientation->clear();
-  for (i = 0; i < 8; ++i) {
+  for(i = 0; i < 8; ++i){
     ui.CameraOrientation->addItem(descs[i]);
-    if (orientValues[i] == orientVal) {
+    if(orientValues[i] == orientVal){
       orientIndex = i;
     }
   }
@@ -92,11 +91,12 @@ void DeviceSetup::initOrientations() {
   ui.CameraOrientation->setCurrentIndex(orientIndex);
 }
 
-void DeviceSetup::on_DeviceSelector_activated(int index) {
-  if (index < 0) {
+void DeviceSetup::on_DeviceSelector_activated(int index)
+{
+  if(index < 0){
     return;
   }
-  if (devPrefs != nullptr) {
+  if(devPrefs != nullptr){
     target->removeWidget(devPrefs);
     delete devPrefs;
     devPrefs = nullptr;
@@ -104,78 +104,65 @@ void DeviceSetup::on_DeviceSelector_activated(int index) {
   QVariant v = ui.DeviceSelector->itemData(index);
   PrefsLink pl = v.value<PrefsLink>();
 #ifndef DARWIN
-  if (pl.deviceType == WEBCAM) {
+  if(pl.deviceType == WEBCAM){
     devPrefs = new WebcamPrefs(pl.ID, this);
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("Webcam"));
-  } else if (pl.deviceType == WEBCAM_FT) {
+  }else
+  if(pl.deviceType == WEBCAM_FT){
     devPrefs = new WebcamFtPrefs(pl.ID, this);
-    emit deviceTypeChanged(pl.deviceType,
-                           QString::fromUtf8("Webcam Face Tracker"));
-  } else if (pl.deviceType == JOYSTICK) {
+    emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("Webcam Face Tracker"));
+  }else
+  if(pl.deviceType == JOYSTICK){
     devPrefs = new JoyPrefs(pl.ID, this);
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("Joystick"));
-  } else
+  }else
 #else
-  if (pl.deviceType == MACWEBCAM) {
+  if(pl.deviceType == MACWEBCAM){
     devPrefs = new MacWebcamPrefs(pl.ID, this);
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("Webcam"));
-  } else if (pl.deviceType == MACWEBCAM_FT) {
+  }else
+  if(pl.deviceType == MACWEBCAM_FT){
     devPrefs = new MacWebcamFtPrefs(pl.ID, this);
-    emit deviceTypeChanged(pl.deviceType,
-                           QString::fromUtf8("Webcam Face Tracker"));
-  } else
+    emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("Webcam Face Tracker"));
+  }else
 #endif
-      if (pl.deviceType == MACPS3EYE) {
+  if(pl.deviceType == MACPS3EYE){
     devPrefs = new MacP3ePrefs(pl.ID, this);
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("PS3Eye"));
-  } else if (pl.deviceType == MACPS3EYE_FT) {
+  }else
+  if(pl.deviceType == MACPS3EYE_FT){
     devPrefs = new MacP3eFtPrefs(pl.ID, this);
-    emit deviceTypeChanged(pl.deviceType,
-                           QString::fromUtf8("PS3Eye Face Tracker"));
-  } else if (pl.deviceType == WIIMOTE) {
+    emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("PS3Eye Face Tracker"));
+  }else
+  if(pl.deviceType == WIIMOTE){
     devPrefs = new WiimotePrefs(pl.ID, this);
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("Wiimote"));
-  } else if (pl.deviceType == TIR) {
-    std::cerr << "DeviceSetup: Creating TirPrefs..." << std::endl;
+  }else
+  if(pl.deviceType == TIR){
     devPrefs = new TirPrefs(pl.ID, this);
-    std::cerr << "DeviceSetup: TirPrefs created, emitting signal..."
-              << std::endl;
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("TrackIR"));
-    std::cerr << "DeviceSetup: Signal emitted." << std::endl;
   }
-  if (devPrefs != nullptr) {
-    if (target == nullptr) {
-      std::cerr << "DeviceSetup: FATAL - target layout is NULL!" << std::endl;
-      return;
-    }
-    std::cerr << "DeviceSetup: Inserting widget into layout..." << std::endl;
+  if(devPrefs != nullptr){
     target->insertWidget(-1, devPrefs);
-    std::cerr << "DeviceSetup: Widget inserted." << std::endl;
   }
 }
 
-void DeviceSetup::on_CameraOrientation_activated(int index) {
-  if (index < 0) {
+void DeviceSetup::on_CameraOrientation_activated(int index)
+{
+  if(index < 0){
     return;
   }
-  PREF.setKeyVal(QString::fromUtf8("Global"),
-                 QString::fromUtf8("Camera-orientation"), orientValues[index]);
+  PREF.setKeyVal(QString::fromUtf8("Global"), QString::fromUtf8("Camera-orientation"), orientValues[index]);
 }
 
-void DeviceSetup::showEvent(QShowEvent *event) {
-  std::cerr << "DeviceSetup: showEvent (spontaneous: " << event->spontaneous()
-            << ")" << std::endl;
-  QWidget::showEvent(event);
+void DeviceSetup::on_RefreshDevices_pressed()
+{
+  refresh();
 }
 
-void DeviceSetup::paintEvent(QPaintEvent *event) {
-  std::cerr << "DeviceSetup: paintEvent" << std::endl;
-  QWidget::paintEvent(event);
-}
 
-void DeviceSetup::on_RefreshDevices_pressed() { refresh(); }
-
-void DeviceSetup::refresh() {
+void DeviceSetup::refresh()
+{
   ui.DeviceSelector->clear();
   bool res = false;
   res |= WiimotePrefs::AddAvailableDevices(*(ui.DeviceSelector));
@@ -190,7 +177,7 @@ void DeviceSetup::refresh() {
   res |= WebcamPrefs::AddAvailableDevices(*(ui.DeviceSelector));
   res |= JoyPrefs::AddAvailableDevices(*(ui.DeviceSelector));
 #endif
-  if (!res) {
+  if(!res){
     initialized = true;
   }
   on_DeviceSelector_activated(ui.DeviceSelector->currentIndex());

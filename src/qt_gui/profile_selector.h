@@ -13,10 +13,6 @@ public:
   ~ProfileSelector();
   void refresh();
 
-protected:
-  void showEvent(QShowEvent *event) override;
-  void paintEvent(QPaintEvent *event) override;
-
 private:
   Ui::ProfileSelectorForm ui;
   ProfileSetup *ps;

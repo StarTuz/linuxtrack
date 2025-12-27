@@ -6,9 +6,7 @@
 #endif
 
 #include <QCloseEvent>
-#include <QPaintEvent>
 #include <QProcess>
-#include <QShowEvent>
 #include <linuxtrack.h>
 
 #include "ui_ltr.h"
@@ -34,8 +32,7 @@ public:
   ~LinuxtrackGui();
 
 protected:
-  void closeEvent(QCloseEvent *event) override;
-  void showEvent(QShowEvent *event) override;
+  void closeEvent(QCloseEvent *event);
 public slots:
   void show();
 private slots:

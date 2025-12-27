@@ -7,22 +7,24 @@
 class ModelEdit;
 class DeviceSetup;
 
-class Guardian : public QObject {
+class Guardian : QObject
+{
   Q_OBJECT
-public:
+ public:
   Guardian(QWidget *parent);
   void regTgt(ModelEdit *me);
   void regTgt(DeviceSetup *ds);
-
-private:
+ private:
   QWidget *parentWidget;
   int mdlType;
   int devType;
   QString devDesc;
   void checkDeviceNModel();
-private slots:
+ private slots:
   void modelSelected(int modelType);
   void deviceTypeChanged(int deviceType, const QString &desc);
 };
+
+
 
 #endif

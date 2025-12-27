@@ -1,8 +1,6 @@
 #include <QFileDialog>
 #include <QInputDialog>
 #include <QMessageBox>
-#include <QPaintEvent>
-#include <QShowEvent>
 #include <QTextStream>
 
 #include "ltr_gui_prefs.h"
@@ -35,17 +33,6 @@ ProfileSelector::~ProfileSelector() {
     delete ps;
     ps = nullptr;
   }
-}
-
-void ProfileSelector::showEvent(QShowEvent *event) {
-  std::cerr << "ProfileSelector: showEvent (spontaneous: "
-            << event->spontaneous() << ")" << std::endl;
-  QWidget::showEvent(event);
-}
-
-void ProfileSelector::paintEvent(QPaintEvent *event) {
-  std::cerr << "ProfileSelector: paintEvent" << std::endl;
-  QWidget::paintEvent(event);
 }
 
 void ProfileSelector::refresh() {

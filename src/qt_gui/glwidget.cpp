@@ -125,10 +125,7 @@ GLWidget::GLWidget(QWidget *parent)
 #endif
 
   connect(rt.get(), SIGNAL(done()), this, SLOT(objectsRead()));
-  // Delay thread start until initializeGL to ensure valid state
-  std::cerr
-      << "GLWidget: Constructor finished, thread will start in initializeGL"
-      << std::endl;
+  rt->start();
 }
 
 GLWidget::~GLWidget() {
@@ -187,19 +184,12 @@ void GLWidget::setYTrans(float val) { yTrans = val; }
 void GLWidget::setZTrans(float val) { zTrans = val; }
 
 void GLWidget::initializeGL() {
-  std::cerr << "GLWidget: initializeGL start" << std::endl;
-  if (!rt->isRunning()) {
-    std::cerr << "GLWidget: Starting object reader thread..." << std::endl;
-    rt->start();
-  }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
-  std::cerr << "GLWidget: initializeOpenGLFunctions()..." << std::endl;
   initializeOpenGLFunctions();
-  std::cerr << "GLWidget: initializeOpenGLFunctions() finished" << std::endl;
 
   const char *glVersion = (const char *)glGetString(GL_VERSION);
   std::cerr << "GLWidget initializeGL: GL Version: "
-            << (glVersion ? glVersion : "NULL") << std::endl;
+            << (glVersion ? glVersion : "NULL") << "\n";
 
   // Create Shader Program
   program = std::make_unique<QOpenGLShaderProgram>();

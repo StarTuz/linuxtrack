@@ -6,18 +6,14 @@
 
 class Guardian;
 
-class DeviceSetup : public QWidget {
+class DeviceSetup : public QWidget
+{
   Q_OBJECT
-public:
+ public:
   DeviceSetup(Guardian *grd, QBoxLayout *tgt, QWidget *parent = 0);
   ~DeviceSetup();
   void refresh();
-
-protected:
-  void showEvent(QShowEvent *event) override;
-  void paintEvent(QPaintEvent *event) override;
-
-private:
+ private:
   Ui::DeviceSetupForm ui;
   static QString descs[8];
   static int orientValues[8];
@@ -25,12 +21,13 @@ private:
   bool initialized;
   void initOrientations();
   QBoxLayout *target;
-private slots:
+ private slots:
   void on_DeviceSelector_activated(int index);
   void on_CameraOrientation_activated(int index);
   void on_RefreshDevices_pressed();
-signals:
+ signals:
   void deviceTypeChanged(int deviceType, const QString &desc);
 };
 
 #endif
+

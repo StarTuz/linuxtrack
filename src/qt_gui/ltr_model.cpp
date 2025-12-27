@@ -2,8 +2,6 @@
 #include "guardian.h"
 #include "help_view.h"
 #include "ltr_gui_prefs.h"
-#include <QPaintEvent>
-#include <QShowEvent>
 #include <QtGlobal>
 #include <iostream>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
@@ -126,17 +124,6 @@ ModelEdit::ModelEdit(Guardian *grd, QWidget *parent)
   refresh();
   connect(ui.ModelSelector, &QComboBox::textActivated, this,
           &ModelEdit::modelSelectorActivated);
-}
-
-void ModelEdit::showEvent(QShowEvent *event) {
-  std::cerr << "ModelEdit: showEvent (spontaneous: " << event->spontaneous()
-            << ")" << std::endl;
-  QWidget::showEvent(event);
-}
-
-void ModelEdit::paintEvent(QPaintEvent *event) {
-  std::cerr << "ModelEdit: paintEvent" << std::endl;
-  QWidget::paintEvent(event);
 }
 
 void ModelEdit::refresh() {
