@@ -140,6 +140,9 @@ void LinuxtrackGui::show() {
   }
   std::cerr << "LinuxtrackGui: ds pointer: " << ds << std::endl;
   std::cerr << "LinuxtrackGui: showWindow pointer: " << showWindow << std::endl;
+  std::cerr << "LinuxtrackGui: Processing pending events before show()..."
+            << std::endl;
+  QCoreApplication::processEvents();
   std::cerr << "LinuxtrackGui: Calling QWidget::show()..." << std::endl;
   QWidget::show();
   std::cerr << "LinuxtrackGui: QWidget::show() returned." << std::endl;
@@ -385,6 +388,13 @@ void LinuxtrackGui::logsPackaged(int exitCode,
 void LinuxtrackGui::onLALClicked() {
   LALDialog dlg(this);
   dlg.exec();
+}
+
+void LinuxtrackGui::showEvent(QShowEvent *event) {
+  std::cerr << "LinuxtrackGui: showEvent received (spontaneous: "
+            << event->spontaneous() << ")" << std::endl;
+  QWidget::showEvent(event);
+  std::cerr << "LinuxtrackGui: showEvent finished." << std::endl;
 }
 
 #include "moc_ltr_gui.cpp"

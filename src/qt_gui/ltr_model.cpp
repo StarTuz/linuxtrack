@@ -126,6 +126,17 @@ ModelEdit::ModelEdit(Guardian *grd, QWidget *parent)
           &ModelEdit::modelSelectorActivated);
 }
 
+void ModelEdit::showEvent(QShowEvent *event) {
+  std::cerr << "ModelEdit: showEvent (spontaneous: " << event->spontaneous()
+            << ")" << std::endl;
+  QWidget::showEvent(event);
+}
+
+void ModelEdit::paintEvent(QPaintEvent *event) {
+  std::cerr << "ModelEdit: paintEvent" << std::endl;
+  QWidget::paintEvent(event);
+}
+
 void ModelEdit::refresh() {
   QString str;
   initializing = true;

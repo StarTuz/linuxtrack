@@ -171,6 +171,17 @@ bool TirPrefs::Activate(const QString &ID, bool init) {
   return true;
 }
 
+void TirPrefs::showEvent(QShowEvent *event) {
+  std::cerr << "TirPrefs: showEvent (spontaneous: " << event->spontaneous()
+            << ")" << std::endl;
+  QWidget::showEvent(event);
+}
+
+void TirPrefs::paintEvent(QPaintEvent *event) {
+  std::cerr << "TirPrefs: paintEvent" << std::endl;
+  QWidget::paintEvent(event);
+}
+
 bool TirPrefs::AddAvailableDevices(QComboBox &combo) {
   bool res = false;
   QString id;

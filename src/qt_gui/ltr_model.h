@@ -64,6 +64,8 @@ public:
   void refresh();
 
 protected:
+  void showEvent(QShowEvent *event) override;
+  void paintEvent(QPaintEvent *event) override;
 private slots:
   void on_CreateModelButton_pressed();
   void ModelCreated(const QString &section);

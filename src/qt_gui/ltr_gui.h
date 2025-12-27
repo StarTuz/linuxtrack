@@ -32,7 +32,8 @@ public:
   ~LinuxtrackGui();
 
 protected:
-  void closeEvent(QCloseEvent *event);
+  void closeEvent(QCloseEvent *event) override;
+  void showEvent(QShowEvent *event) override;
 public slots:
   void show();
 private slots:

@@ -35,6 +35,17 @@ ProfileSelector::~ProfileSelector() {
   }
 }
 
+void ProfileSelector::showEvent(QShowEvent *event) {
+  std::cerr << "ProfileSelector: showEvent (spontaneous: "
+            << event->spontaneous() << ")" << std::endl;
+  QWidget::showEvent(event);
+}
+
+void ProfileSelector::paintEvent(QPaintEvent *event) {
+  std::cerr << "ProfileSelector: paintEvent" << std::endl;
+  QWidget::paintEvent(event);
+}
+
 void ProfileSelector::refresh() {
   QString currentItem = ui.Profiles->currentText();
   QStringList profiles;

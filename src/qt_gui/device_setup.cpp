@@ -160,6 +160,17 @@ void DeviceSetup::on_CameraOrientation_activated(int index) {
                  QString::fromUtf8("Camera-orientation"), orientValues[index]);
 }
 
+void DeviceSetup::showEvent(QShowEvent *event) {
+  std::cerr << "DeviceSetup: showEvent (spontaneous: " << event->spontaneous()
+            << ")" << std::endl;
+  QWidget::showEvent(event);
+}
+
+void DeviceSetup::paintEvent(QPaintEvent *event) {
+  std::cerr << "DeviceSetup: paintEvent" << std::endl;
+  QWidget::paintEvent(event);
+}
+
 void DeviceSetup::on_RefreshDevices_pressed() { refresh(); }
 
 void DeviceSetup::refresh() {
