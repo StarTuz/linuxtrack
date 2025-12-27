@@ -14,7 +14,6 @@ build/
 build32/
 dist32/
 Makefile
-*.cmake
 CMakeCache.txt
 CMakeFiles/
 *.log
