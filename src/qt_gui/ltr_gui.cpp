@@ -122,21 +122,39 @@ void LinuxtrackGui::show() {
             << std::endl;
   showWindow->show();
   std::cerr << "LinuxtrackGui: showWindow shown." << std::endl;
-  QString dbg = QProcessEnvironment::systemEnvironment().value(
-      QString::fromUtf8("LINUXTRACK_DBG"));
+  QString env_key = QString::fromUtf8("LINUXTRACK_DBG");
+  std::cerr << "LinuxtrackGui: Accessing QProcessEnvironment..." << std::endl;
+  QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+  std::cerr << "LinuxtrackGui: Getting value for " << env_key.toStdString()
+            << "..." << std::endl;
+  QString dbg = env.value(env_key);
+  std::cerr << "LinuxtrackGui: DBG env check: " << dbg.toStdString()
+            << std::endl;
   if (dbg.contains(QChar::fromLatin1('d'))) {
-    helper->show();
+    std::cerr << "LinuxtrackGui: Showing helper..." << std::endl;
+    if (helper != nullptr) {
+      helper->show();
+    } else {
+      std::cerr << "LinuxtrackGui: ERROR - helper is NULL!" << std::endl;
+    }
   }
+  std::cerr << "LinuxtrackGui: Calling QWidget::show()..." << std::endl;
   QWidget::show();
+  std::cerr << "LinuxtrackGui: QWidget::show() returned." << std::endl;
   if (welcome) {
+    std::cerr << "LinuxtrackGui: welcome=true, showing welcome help..."
+              << std::endl;
     HelpViewer::ChangePage(QString::fromUtf8("welcome.htm"));
     HelpViewer::ShowWindow();
   } else if (news_serial < NEWS_SERIAL) {
+    std::cerr << "LinuxtrackGui: showing news help..." << std::endl;
     HelpViewer::ChangePage(QString::fromUtf8("news.htm"));
     HelpViewer::ShowWindow();
   } else {
+    std::cerr << "LinuxtrackGui: setting default help page..." << std::endl;
     HelpViewer::ChangePage(QString::fromUtf8("dev_setup.htm"));
   }
+  std::cerr << "LinuxtrackGui: show() finished." << std::endl;
 }
 
 LinuxtrackGui::~LinuxtrackGui() {

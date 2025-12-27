@@ -185,11 +185,13 @@ void GLWidget::setZTrans(float val) { zTrans = val; }
 
 void GLWidget::initializeGL() {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+  std::cerr << "GLWidget: initializeGL start" << std::endl;
   initializeOpenGLFunctions();
+  std::cerr << "GLWidget: initializeOpenGLFunctions() finished" << std::endl;
 
   const char *glVersion = (const char *)glGetString(GL_VERSION);
   std::cerr << "GLWidget initializeGL: GL Version: "
-            << (glVersion ? glVersion : "NULL") << "\n";
+            << (glVersion ? glVersion : "NULL") << std::endl;
 
   // Create Shader Program
   program = std::make_unique<QOpenGLShaderProgram>();
