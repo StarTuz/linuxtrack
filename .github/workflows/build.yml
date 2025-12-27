@@ -28,7 +28,7 @@ jobs:
             build-essential cmake ninja-build \
             libmxml-dev libusb-1.0-0-dev zlib1g-dev \
             libv4l-dev liblo-dev libopencv-dev \
-            wine64-tools wine-stable wine32 libwine-dev libwine-dev:i386 \
+            wine64-tools wine-stable wine32 libwine-dev \
             wget file gcc-multilib g++-multilib
 
       - name: Install Qt6 dependencies
