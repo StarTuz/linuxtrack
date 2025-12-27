@@ -87,6 +87,9 @@ fi
 # Note: we use LD_LIBRARY_PATH to help linuxdeploy find our internal libraries
 export LD_LIBRARY_PATH="$(pwd)/$APP_DIR/usr/lib:$(pwd)/$APP_DIR/usr/lib/linuxtrack:$LD_LIBRARY_PATH"
 
+# We must set ARCH because we bundle both 32-bit and 64-bit libraries
+export ARCH=x86_64
+
 "$LINUXDEPLOY" --appdir "$APP_DIR" \
     --desktop-file "$APP_DIR/usr/share/applications/$APP_NAME.desktop" \
     --icon-file "$APP_DIR/usr/share/pixmaps/$APP_NAME.svg" \
