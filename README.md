@@ -26,14 +26,21 @@ Unlike other legacy forks, this version addresses deep technical debt to ensure 
 
 ## 🛠️ Installation
 
-### 1. Build from Source
+### 1. Build from Source (CMake)
+**Prerequisites:** Qt6 (likely 6.10+ recommended), OpenGLES/OpenGL drivers, libusb-1.0, libmxml, liblo.
+
 ```bash
-./configure --prefix=/opt/linuxtrack
-make
+mkdir build && cd build
+cmake -DCMAKE_INSTALL_PREFIX=/usr ..
+make -j$(nproc)
 sudo make install
 ```
 
-### 2. Configure Wine/Proton Support
+### 2. AppImage Distribution
+**Generic AppImage:** The generic CI build is currently experimental due to Qt6 ABI complexity.
+**Arch Linux AppImage:** A verified, working AppImage (built against Arch system Qt) is available. This version uses the host system's Qt libraries for maximum compatibility on rolling release distros.
+
+### 3. Configure Wine/Proton Support
 1. Open `ltr_gui`.
 2. Go to the **Misc.** tab.
 3. Click **"Install Linuxtrack-Wine support..."**.
