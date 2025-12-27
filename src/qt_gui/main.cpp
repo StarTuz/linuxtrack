@@ -12,12 +12,13 @@ int main(int argc, char *argv[]) {
   setenv("LC_ALL", "C", 1);
   setlocale(LC_ALL, "C");
 
-  // Force Qt6 to use OpenGL backend for RHI, avoiding software rendering
-  // issues that cause "non-opengl surface" errors
-  setenv("QT_QUICK_BACKEND", "software", 0); // Don't override if set
-  setenv("QSG_RHI_BACKEND", "opengl", 0);    // Prefer OpenGL for RHI
+  // Force Qt6 to use software rendering for RHI to avoid OpenGL context
+  // issues with bundled Qt in AppImage. The GLWidget uses its own OpenGL
+  // context via QOpenGLWidget, so this only affects Qt's internal rendering.
+  setenv("QSG_RHI_BACKEND", "software", 0); // Force software RHI
+  setenv("QT_QPA_PLATFORM", "xcb", 0);      // Explicitly use xcb (X11)
 
-  // Set default surface format for OpenGL compatibility
+  // Set default surface format for our GLWidget's OpenGL compatibility
   QSurfaceFormat format;
   format.setDepthBufferSize(24);
   format.setStencilBufferSize(8);
