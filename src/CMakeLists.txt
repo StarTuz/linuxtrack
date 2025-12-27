@@ -79,6 +79,7 @@ endif()
 
 # libjoy (Joystick Driver)
 add_library(joy MODULE runloop.c runloop.h joy.c)
+target_include_directories(joy PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(joy PRIVATE ltr)
 set_target_properties(joy PROPERTIES PREFIX "lib" LINK_FLAGS ${DRIVER_LDFLAGS})
 
