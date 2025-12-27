@@ -591,21 +591,23 @@ After any modernization change, verify:
 
 ### Native Linux Global Hotkey Daemon
 
-**Status:** 💡 Future Idea  
-**Priority:** Low (Controller.exe works for Wine games)  
+**Status:** ✅ IMPLEMENTED (2025-12-26)  
+**Priority:** DONE  
 **Use Case:** Native Linux games, centralized control across all prefixes
 
-**Current State:**
-- `Controller.exe` runs inside Wine prefixes and provides hotkey support for Windows games
-- `ltr_recenter` is a CLI tool that must be called externally
-- No unified solution for Linux-native games or cross-prefix control
+**Implementation:**
+- `ltr_hotkeyd` - Global hotkey daemon using X11 XGrabKey
+- `ltr_hotkey_gui` - Qt configuration GUI (similar to Controller.exe for Wine)
+- Configuration stored in `~/.config/linuxtrack/ltr_hotkey_gui.conf`
+- Default keys: F12 (recenter), Pause (toggle pause), Ctrl+F12 (quit)
+- Keys are fully customizable via the GUI
 
-**Proposed Solution:**
-Create a lightweight Linux daemon (`ltr_hotkeyd`) that:
-1. Listens for global hotkeys on both X11 (XGrabKey) and Wayland (if possible)
-2. Sends commands to the Linuxtrack server via shared memory or IPC
-3. Works regardless of which game (Wine or native) has focus
-4. Configurable via ltr_gui or config file
+**Current Features:**
+- Works for native Linux games (X4: Foundations, IL-2 Sturmovik, X-Plane Linux, etc.)
+- Single configuration for all games
+- No need to run Controller.exe for native games
+- Works alongside ltr_udp for OpenTrack protocol games
+- Minimizes to system tray
 
 **Architecture:**
 ```
@@ -618,26 +620,21 @@ Create a lightweight Linux daemon (`ltr_hotkeyd`) that:
 │  └──────────────┘   └──────────────┘   └─────────────┘ │
 │         │                                               │
 │         ▼                                               │
-│  ~/.config/linuxtrack/hotkeys.conf                      │
-│  pause_key=F11                                          │
+│  ~/.config/linuxtrack/ltr_hotkey_gui.conf               │
 │  recenter_key=F12                                       │
+│  pause_key=Pause                                        │
+│  quit_key=Ctrl+F12                                      │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Benefits:**
-- Works for native Linux games (IL-2 Sturmovik, X-Plane Linux, etc.)
-- Single configuration for all games
-- No need to run Controller.exe per-prefix
-- Could integrate with desktop environment (KDE/GNOME shortcuts)
-
-**Challenges:**
-- Wayland's security model restricts global key capture
-- May need different backends for X11/Wayland
-- Needs careful integration with existing `ltr_recenter` command
+**Known Limitations:**
+- X11 only (Wayland support not implemented due to security model restrictions)
+- Works under XWayland for Wayland users
 
 **Implementation Notes:**
-- Could use `libevdev` for raw keyboard access
-- Or rely on compositor-specific protocols (KWin, wlroots)
+- Uses X11 XGrabKey for global keyboard capture
+- Parses Qt key sequence format from config file
+- Communicates with Linuxtrack via standard client library
 - Start simple: X11-only, with Wayland as stretch goal
 
 ### Project LAL (Licensed Asset Loader)

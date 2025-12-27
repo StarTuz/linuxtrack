@@ -13,7 +13,6 @@
  */
 
 #include <arpa/inet.h>
-#include <math.h>
 #include <signal.h>
 #include <stdbool.h>
 #include <stdint.h>
@@ -23,7 +22,6 @@
 #include <sys/socket.h>
 #include <unistd.h>
 
-#include "config.h"
 #include "linuxtrack.h"
 
 // Default Opentrack UDP port
@@ -39,7 +37,7 @@ void signal_handler(int dummy) {
   keep_running = false;
 }
 
-// OpenTrack UDP Packet Structure: 6 doubles
+// OpenTrack UDP Packet Structure: 6 doubles (Standard)
 // Order: X, Y, Z, Yaw, Pitch, Roll
 typedef struct __attribute__((packed)) {
   double x;     // cm
@@ -50,6 +48,22 @@ typedef struct __attribute__((packed)) {
   double roll;  // degrees
 } opentrack_udp_t;
 
+// Freetrack UDP Packet Structure (Alternative)
+// Needs explicit 4-byte fields
+typedef struct __attribute__((packed)) {
+  int32_t data_id;
+  float cam_width;
+  float cam_height;
+  float yaw;
+  float pitch;
+  float roll;
+  float x;
+  float y;
+  float z;
+} freetrack_udp_t;
+
+typedef enum { PROTO_OPENTRACK, PROTO_FREETRACK } proto_t;
+
 int main(int argc, char *argv[]) {
   linuxtrack_pose_t pose;
   // Blobs buffer required by API even if we don't use it
@@ -57,13 +71,22 @@ int main(int argc, char *argv[]) {
   int blobs_read;
   const char *target_ip = DEFAULT_HOST;
   int target_port = DEFAULT_PORT;
+  proto_t protocol = PROTO_OPENTRACK;
 
-  // Parse arguments
-  if (argc >= 2) {
-    target_port = atoi(argv[1]);
-  }
-  if (argc >= 3) {
-    target_ip = argv[2];
+  // Parse simple arguments
+  for (int i = 1; i < argc; i++) {
+    if (strncmp(argv[i], "--proto=freetrack", 17) == 0) {
+      protocol = PROTO_FREETRACK;
+    } else if (strncmp(argv[i], "--ip=", 5) == 0) {
+      target_ip = argv[i] + 5;
+    } else if (strncmp(argv[i], "--port=", 7) == 0) {
+      target_port = atoi(argv[i] + 7);
+    } else {
+      // Assume port if just a number
+      int p = atoi(argv[i]);
+      if (p > 1024)
+        target_port = p;
+    }
   }
 
   // Setup signal handling
@@ -85,11 +108,15 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  printf("ltr_udp: Sending generic OpenTrack UDP data to %s:%d\n", target_ip,
-         target_port);
+  printf("ltr_udp: Starting...\n");
+  printf("ltr_udp: Protocol: %s\n", (protocol == PROTO_OPENTRACK)
+                                        ? "OpenTrack (6 doubles)"
+                                        : "FreeTrack (9 fields)");
+  printf("ltr_udp: Target:   %s:%d\n", target_ip, target_port);
   printf("Press Ctrl+C to stop.\n");
 
   // Initialize Linuxtrack
+  printf("ltr_udp: Initializing Linuxtrack client...\n");
   linuxtrack_state_type state = linuxtrack_init(NULL);
   if (state < LINUXTRACK_OK) {
     fprintf(stderr, "Failed to initialize linuxtrack: %s\n",
@@ -98,10 +125,12 @@ int main(int argc, char *argv[]) {
   }
 
   // Wait for tracker to start
+  printf("ltr_udp: Waiting for tracker state RUNNING/PAUSED...\n");
   int timeout = 0;
   while (timeout < 50 && keep_running) {
     state = linuxtrack_get_tracking_state();
     if (state == RUNNING || state == PAUSED) {
+      printf("ltr_udp: Tracker IS ACTIVE! (State: %d)\n", state);
       break;
     }
     usleep(200000); // 200ms
@@ -114,35 +143,72 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
+  // Enable notifications so we get pose updates
+  linuxtrack_notification_on();
+  printf("ltr_udp: Notifications enabled, starting main loop.\n");
+
   // Main Loop
-  opentrack_udp_t packet;
+  long frame_count = 0;
 
   while (keep_running) {
     // Wait for frame (blocking wait to reduce CPU usage)
-    linuxtrack_wait(100);
+    // Wait BEFORE getting data, match original osc_server cadence
+    linuxtrack_wait(10);
 
-    if (linuxtrack_get_pose_full(&pose, blobs, 10, &blobs_read) > 0) {
-      // Linuxtrack units:
-      // Translation: Millimeters (typically)
-      // Rotation: Degrees
+    int result = linuxtrack_get_pose_full(&pose, blobs, 10, &blobs_read);
 
-      // X4 / OpenTrack UDP expectation:
-      // Translation: Centimeters (?) - Standard is usually cm for flight sims.
-      // Rotation: Degrees.
+    // Debug: show result every 100 iterations
+    static long debug_count = 0;
+    if (debug_count % 100 == 0) {
+      printf("ltr_udp: get_pose_full returned %d, blobs=%d, yaw=%.2f\n", result,
+             blobs_read, pose.yaw);
+    }
+    debug_count++;
 
-      // We convert mm -> cm by dividing by 10.0
-      packet.x = (double)pose.tx / 10.0;
-      packet.y = (double)pose.ty / 10.0;
-      packet.z = (double)pose.tz / 10.0;
+    // ALWAYS send packets (even if result==0) for testing
+    {
+      ssize_t sent_bytes = 0;
 
-      // Rotations are already in degrees
-      packet.yaw = (double)pose.yaw;
-      packet.pitch = (double)pose.pitch;
-      packet.roll = (double)pose.roll;
+      if (protocol == PROTO_OPENTRACK) {
+        opentrack_udp_t packet;
+        // Linuxtrack mm -> cm
+        packet.x = (double)pose.tx / 10.0;
+        packet.y = (double)pose.ty / 10.0;
+        packet.z = (double)pose.tz / 10.0;
 
-      // Send packet
-      sendto(sock_fd, &packet, sizeof(packet), 0, (struct sockaddr *)&dest_addr,
-             sizeof(dest_addr));
+        packet.yaw = (double)pose.yaw;
+        packet.pitch = (double)pose.pitch;
+        packet.roll = (double)pose.roll;
+
+        sent_bytes = sendto(sock_fd, &packet, sizeof(packet), 0,
+                            (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+      } else {
+        freetrack_udp_t packet;
+        packet.data_id = 2; // ID?
+        packet.cam_width = 0;
+        packet.cam_height = 0;
+        packet.yaw = (float)pose.yaw;
+        packet.pitch = (float)pose.pitch;
+        packet.roll = (float)pose.roll;
+        packet.x =
+            (float)pose.tx; // FT might want mm? or cm? Stick to raw mm for now
+        packet.y = (float)pose.ty;
+        packet.z = (float)pose.tz;
+
+        sent_bytes = sendto(sock_fd, &packet, sizeof(packet), 0,
+                            (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+      }
+
+      if (sent_bytes < 0) {
+        perror("Error sending UDP packet");
+      }
+
+      // Debug output every ~60 frames (approx 1-2 sec)
+      if (frame_count % 60 == 0) {
+        printf("ltr_udp: Sent package %ld | Yaw: %.2f Pitch: %.2f Roll: %.2f\n",
+               frame_count, pose.yaw, pose.pitch, pose.roll);
+      }
+      frame_count++;
     }
   }
 

@@ -44,8 +44,8 @@
            <bool>true</bool>
           </property>
           <property name="sizePolicy">
-           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
-            <horstretch>0</horstretch>
+           <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+            <horstretch>1</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
           </property>
@@ -77,6 +77,13 @@
    </item>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout_9">
+     <item>
+      <widget class="QPushButton" name="NewProfile">
+       <property name="text">
+        <string>New Profile</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <widget class="QPushButton" name="ImportProfile">
        <property name="text">

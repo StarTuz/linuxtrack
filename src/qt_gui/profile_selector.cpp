@@ -1,4 +1,5 @@
 #include <QFileDialog>
+#include <QInputDialog>
 #include <QMessageBox>
 #include <QTextStream>
 
@@ -11,7 +12,7 @@
 #include <iostream>
 
 ProfileSelector::ProfileSelector(QWidget *parent)
-    : QWidget(parent), ps(NULL), initializing(true) {
+    : QWidget(parent), ps(nullptr), initializing(true) {
   ui.setupUi(this);
 
   // To make sure that at least default exists
@@ -21,14 +22,16 @@ ProfileSelector::ProfileSelector(QWidget *parent)
   ui.Profiles->addItems(Profile::getProfiles().getProfileNames());
   initializing = false;
   setCurrentProfile(QString::fromUtf8("Default"));
+  connect(ui.Profiles, &QComboBox::currentIndexChanged, this,
+          &ProfileSelector::profilesIndexChanged);
   //  on_Profiles_currentIndexChanged("Default");
 }
 
 ProfileSelector::~ProfileSelector() {
-  if (ps != NULL) {
+  if (ps != nullptr) {
     ui.AxesSetup->removeWidget(ps);
     delete ps;
-    ps = NULL;
+    ps = nullptr;
   }
 }
 
@@ -53,18 +56,25 @@ bool ProfileSelector::setCurrentProfile(QString prof) {
   return true;
 }
 
-void ProfileSelector::on_Profiles_currentIndexChanged(const QString &text) {
+void ProfileSelector::profilesIndexChanged(int index) {
+  (void)index;
+  QString text = ui.Profiles->currentText();
+  if (initializing)
+    return;
+  if (!setCurrentProfile(text)) {
+    // refresh();
+  }
   if ((PROFILE.isProfile(text)) < 0) {
     return;
   }
-  if (ps != NULL) {
+  if (ps != nullptr) {
     ui.AxesSetup->removeWidget(ps);
     delete ps;
-    ps = NULL;
+    ps = nullptr;
   }
   // std::cout<<"Changed index to "<<text.toStdString()<<"\n";
   ps = new ProfileSetup(text, this);
-  ui.AxesSetup->insertWidget(1, ps);
+  ui.AxesSetup->addWidget(ps);
 }
 
 void ProfileSelector::on_CopyFromDefault_pressed() { ps->copyFromDefault(); }
@@ -102,6 +112,33 @@ void ProfileSelector::on_ImportProfile_pressed() {
   refresh();
 }
 
+void ProfileSelector::on_NewProfile_pressed() {
+  bool ok;
+  QString newName = QInputDialog::getText(
+      this, QString::fromUtf8("New Profile"),
+      QString::fromUtf8("Enter name for the new profile:"), QLineEdit::Normal,
+      QString::fromUtf8(""), &ok);
+
+  if (!ok || newName.isEmpty()) {
+    return;
+  }
+
+  // Check if profile already exists
+  if (PROFILE.isProfile(newName) >= 0) {
+    QMessageBox::warning(
+        this, QString::fromUtf8("Profile Exists"),
+        QString::fromUtf8("A profile named '") + newName +
+            QString::fromUtf8(
+                "' already exists. Please choose a different name."));
+    return;
+  }
+
+  // Create the new profile
+  PROFILE.addProfile(newName);
+  refresh();
+  setCurrentProfile(newName);
+}
+
 void ProfileSelector::on_ExportProfile_pressed() {
   QString home = QString::fromUtf8(qgetenv("HOME").constData());
   QString mask(QString::fromUtf8("Profile (*.profile)"));
@@ -127,7 +164,7 @@ void ProfileSelector::on_ExportProfile_pressed() {
 }
 
 bool ProfileSelector::close() {
-  if (ps != NULL) {
+  if (ps != nullptr) {
     ps->close();
   }
   return QWidget::close();

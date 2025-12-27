@@ -84,7 +84,7 @@ Linuxtrack is a comprehensive head-tracking solution for Linux and Mac that enab
 
 ### Objective
 
-Fix Linuxtrack to compile on modern Linux systems without significant architectural changes.
+Fix Linuxtrack to compile on modern Linux systems and add native game support.
 
 ### Status: ✅ COMPLETE
 
@@ -94,6 +94,13 @@ The project now compiles successfully on modern Linux with:
 - Qt 5.x/6.x
 - OpenCV 4.x
 - Autotools (automake 1.18, autoconf 2.72)
+
+**Recent Additions (2025-12-26):**
+- **Native Games Support:** ltr_udp bridge for X4: Foundations and other OpenTrack-compatible games
+- **Global Hotkeys:** ltr_hotkeyd daemon for recenter/pause without alt-tabbing  
+- **Hotkey GUI:** ltr_hotkey_gui for configuring hotkeys (similar to Controller.exe for Wine)
+- **Profile Management:** "New Profile" button in ltr_gui for creating custom profiles
+- **Build Cleanup:** Removed stale pre-generated ui_*.h and moc_*.cpp files from source tree
 
 ---
 
@@ -409,7 +416,9 @@ libcwiid                 # Wiimote support
 | `ltr_recenter` | Recenter command utility |
 | `osc_server` | OSC protocol server |
 | `mickey` | Mouse control application |
-| `ltr_udp` | X4: Foundations (OpenTrack UDP) bridge |
+| `ltr_udp` | X4: Foundations / native games (OpenTrack UDP) bridge |
+| `ltr_hotkeyd` | Global hotkey daemon for native games (X11) |
+| `ltr_hotkey_gui` | Qt GUI for configuring hotkeys |
 
 ### Wine Bridge (in `src/wine_bridge/`)
 

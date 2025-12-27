@@ -149,8 +149,18 @@ add_executable(ltr_udp ltr_udp.c linuxtrack.c)
 target_include_directories(ltr_udp PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ..)
 target_link_libraries(ltr_udp ${LTR_LIBPTHREAD} ${LTR_LIBDL})
 
+# ltr_hotkeyd (Global hotkey daemon for native games - X11 only)
+if(X11_FOUND)
+    add_executable(ltr_hotkeyd ltr_hotkeyd.c linuxtrack.c)
+    target_include_directories(ltr_hotkeyd PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ..)
+    target_link_libraries(ltr_hotkeyd ${X11_LIBRARIES} ${LTR_LIBPTHREAD} ${LTR_LIBDL})
+endif()
+
 # LAL (Licensed Asset Loader)
 add_subdirectory(lal)
+
+# Native Hotkey GUI
+add_subdirectory(ltr_hotkey_gui)
 
 # --- Installation ---
 
@@ -168,6 +178,9 @@ endforeach()
 set(BIN_TARGETS ltr_server1 ltr_recenter ltr_pipe ltr_extractor ltr_udp)
 if(TARGET osc_server)
     list(APPEND BIN_TARGETS osc_server)
+endif()
+if(TARGET ltr_hotkeyd)
+    list(APPEND BIN_TARGETS ltr_hotkeyd)
 endif()
 install(TARGETS ${BIN_TARGETS} DESTINATION bin)
 
