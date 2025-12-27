@@ -1,7 +1,0 @@
-{ global:
-XPluginStart;
-XPluginStop;
-XPluginDisable;
-XPluginEnable;
-XPluginReceiveMessage;
-local: *; };
