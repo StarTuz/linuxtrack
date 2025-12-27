@@ -8,13 +8,21 @@ HERE=${SELF%/*}
 # Force software rendering for Qt's RHI to avoid OpenGL context issues
 # between bundled Qt and system graphics stack
 export QSG_RHI_BACKEND=software
-
-# Force xcb platform (skip wayland lookup)
-export QT_QPA_PLATFORM=xcb
-
-# Disable Qt's hardware acceleration features that conflict with bundled libs
 export QT_QUICK_BACKEND=software
 export QMLSCENE_DEVICE=softwarecontext
+
+# Disable RHI for widgets (Qt6 specific)
+export QT_WIDGETS_RHI=0
+export QT_ENABLE_GLES_WRAPPER=0
+
+# Force xcb platform (skip wayland lookup)  
+export QT_QPA_PLATFORM=xcb
+
+# Use Fusion style which doesn't rely on platform-specific rendering
+export QT_STYLE_OVERRIDE=Fusion
+
+# Disable GPU acceleration that might conflict
+export LIBGL_ALWAYS_SOFTWARE=1
 
 # Set library paths
 export LD_LIBRARY_PATH="${HERE}/usr/lib:${HERE}/usr/lib/linuxtrack:${LD_LIBRARY_PATH}"
