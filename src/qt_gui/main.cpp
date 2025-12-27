@@ -1,7 +1,7 @@
 #include <QApplication>
 
 #include "ltr_gui.h"
-#include <utils.h>
+#include "utils.h"
 #include <locale.h>
 #include <stdlib.h>
 

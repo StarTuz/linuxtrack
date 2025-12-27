@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <wchar.h>
-#include <utils.h>
+#include "utils.h"
 #include "resource.h"
 #include "kbi_interface.h"
 
@@ -70,8 +70,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
   /* Use default icon and mouse-pointer */
   wincl.hIcon = LoadIcon (hThisInstance, MAKEINTRESOURCE(1002));
   wincl.hIconSm = LoadIcon (hThisInstance, MAKEINTRESOURCE(1001));
-  wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
-  wincl.lpszMenuName = NULL;                 /* No menu */
+  wincl.hCursor = LoadCursor (nullptr, IDC_ARROW);
+  wincl.lpszMenuName = nullptr;                 /* No menu */
   wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */
   wincl.cbWndExtra = 0;                      /* structure or the window instance */
   /* Use Windows's default colour as the background of the window */

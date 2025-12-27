@@ -2,6 +2,7 @@
 #define GLWIDGET_H
 
 #include <QtGlobal>
+#include <memory>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 // Qt6: Use modern OpenGL with shaders (required for Wayland/EGL)
@@ -70,7 +71,7 @@ private:
   // Modern OpenGL Resources (Qt6)
   QOpenGLVertexArrayObject vao;
   QOpenGLBuffer vbo;
-  QOpenGLShaderProgram *program;
+  std::unique_ptr<QOpenGLShaderProgram> program;
   QOpenGLTexture *texture;
 
   // Transform Matrices
@@ -104,7 +105,7 @@ private:
 
   QColor trolltechPurple;
 
-  ReaderThread *rt;
+  std::unique_ptr<ReaderThread> rt;
 };
 
 #endif

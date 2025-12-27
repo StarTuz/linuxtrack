@@ -7,7 +7,7 @@
 #include <ltlib.h>
 
 Window::Window(QWidget *t, QCheckBox *b)
-    : glWidget(NULL), tab(t), mainLayout(NULL), control(b), constructed(false)
+    : glWidget(nullptr), tab(t), mainLayout(nullptr), control(b), constructed(false)
 
 {
   dynamic_cast<QTabWidget *>(tab)->setTabEnabled(1, false);
@@ -58,13 +58,13 @@ void Window::close_widget() {
     constructed = false;
     control->setEnabled(true);
   }
-  if (mainLayout != NULL) {
+  if (mainLayout != nullptr) {
     delete mainLayout;
-    mainLayout = NULL;
+    mainLayout = nullptr;
   }
-  if (glWidget != NULL) {
+  if (glWidget != nullptr) {
     GLWidget *tmp = glWidget;
-    glWidget = NULL;
+    glWidget = nullptr;
     delete tmp;
   }
 }
@@ -80,7 +80,7 @@ void Window::newPose(linuxtrack_full_pose_t *raw, linuxtrack_pose_t *unfiltered,
                      linuxtrack_pose_t *processed) {
   (void)raw;
   (void)unfiltered;
-  if (glWidget != NULL) {
+  if (glWidget != nullptr) {
     glWidget->setXRotation(processed->pitch);
     glWidget->setYRotation(processed->yaw);
     glWidget->setZRotation(processed->roll);

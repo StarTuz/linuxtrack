@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-#include "../../config.h"
+#include "config.h"
 #endif
 
 #include <QDesktopServices>
@@ -13,10 +13,10 @@
 #include "ltr_gui_prefs.h"
 #include <iostream>
 
-HelpViewer *HelpViewer::hlp = NULL;
+HelpViewer *HelpViewer::hlp = nullptr;
 
 HelpViewer &HelpViewer::getHlp() {
-  if (hlp == NULL) {
+  if (hlp == nullptr) {
     hlp = new HelpViewer();
   }
   return *hlp;

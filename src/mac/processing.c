@@ -10,8 +10,8 @@
 #include "facetrack.h"
 #endif
 
-#include <cal.h>
-#include <ipc_utils.h>
+#include "cal.h"
+#include "ipc_utils.h"
 #include "buffer.h"
 #include <com_proc.h>
 #include <args.h>

@@ -6,9 +6,9 @@
 #include <sys/file.h>
 #include <string.h>
 #include <com_proc.h>
-#include <cal.h>
-#include <utils.h>
-#include <ipc_utils.h>
+#include "cal.h"
+#include "utils.h"
+#include "ipc_utils.h"
 
 typedef struct{
   command_t        command;

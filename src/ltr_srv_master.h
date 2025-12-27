@@ -2,7 +2,7 @@
 #define LTR_SRV_MASTER__H
 
 #include <stdbool.h>
-#include <ltlib_int.h>
+#include "ltlib_int.h"
 
 
 #ifdef __cplusplus

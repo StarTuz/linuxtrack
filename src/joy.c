@@ -16,10 +16,10 @@
 #include <unistd.h>
 #include <poll.h>
 
-#include <utils.h>
-#include <cal.h>
-#include <runloop.h>
-#include <joy_driver_prefs.h>
+#include "utils.h"
+#include "cal.h"
+#include "runloop.h"
+#include "joy_driver_prefs.h"
 
 #define NAME_LENGTH 256
 #define AXMAP_SIZE (ABS_MAX + 1)

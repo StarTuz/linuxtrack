@@ -10,18 +10,18 @@
 
 
 typedef int (*ltr_int_ps3eye_found_fun_t)(void);
-static ltr_int_ps3eye_found_fun_t ltr_int_ps3eye_found_fun = NULL;
+static ltr_int_ps3eye_found_fun_t ltr_int_ps3eye_found_fun = nullptr;
 static lib_fun_def_t functions[] = {
   {(char *)"ltr_int_ps3eye_found", (void*) &ltr_int_ps3eye_found_fun},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 
 static bool find_p3e(void)
 {
-  void *libhandle = NULL;
+  void *libhandle = nullptr;
   int res = 0;
-  if((libhandle = ltr_int_load_library((char *)"libp3e", functions)) != NULL){
+  if((libhandle = ltr_int_load_library((char *)"libp3e", functions)) != nullptr){
     res = ltr_int_ps3eye_found_fun();
     ltr_int_unload_library(libhandle, functions);
   }

@@ -1,8 +1,8 @@
 
 #include "wii_server.h"
-#include <image_process.h>
-#include <utils.h>
-#include <ipc_utils.h>
+#include "image_process.h"
+#include "utils.h"
+#include "ipc_utils.h"
 #include <string.h>
 
 #include <iostream>
@@ -10,14 +10,14 @@
 #include <QMessageBox>
 
 #ifdef HAVE_CONFIG_H
-  #include "../../config.h"
+  #include "config.h"
 #endif
 
 #define WIIMOTE_HORIZONTAL_RESOLUTION 1024
 #define WIIMOTE_VERTICAL_RESOLUTION 768
 
 
-WiiServerWindow::WiiServerWindow(QWidget *parent) : QWidget(parent), wii(NULL), mm(NULL), old_cmd(STOP)
+WiiServerWindow::WiiServerWindow(QWidget *parent) : QWidget(parent), wii(nullptr), mm(nullptr), old_cmd(STOP)
 {
   ui.setupUi(this);
   setWindowTitle(QString("Linuxtrack Wii server v")+PACKAGE_VERSION);
@@ -47,7 +47,7 @@ WiiServerWindow::~WiiServerWindow()
   ltr_int_closeWiiCom();
   delete cmdTimer;
   delete wii;
-  wii = NULL;
+  wii = nullptr;
 }
 
 void WiiServerWindow::on_ConnectButton_pressed()

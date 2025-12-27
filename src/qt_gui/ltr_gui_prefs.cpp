@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-  #include "../../config.h"
+  #include "config.h"
 #endif
 
 #include "pref.h"
@@ -14,16 +14,16 @@
 #include <QDir>
 #include <iostream>
 
-PrefProxy *PrefProxy::prf = NULL;
+PrefProxy *PrefProxy::prf = nullptr;
 
 static int warnMessage(const QString &message){
- return QMessageBox::warning(NULL, QString::fromUtf8("Linuxtrack"),
+ return QMessageBox::warning(nullptr, QString::fromUtf8("Linuxtrack"),
                                 message, QMessageBox::Ok, QMessageBox::Ok);
 }
 
 PrefProxy::PrefProxy()
 {
-  if(ltr_int_read_prefs(NULL, false)){
+  if(ltr_int_read_prefs(nullptr, false)){
     checkPrefix(true);
     return;
   }
@@ -42,7 +42,7 @@ PrefProxy::PrefProxy()
     throw;
   }
   ltr_int_new_prefs();
-  ltr_int_read_prefs(NULL, true);
+  ltr_int_read_prefs(nullptr, true);
   checkPrefix(true);
 }
 
@@ -53,7 +53,7 @@ bool PrefProxy::checkPrefix(bool save)
   appPath += QString::fromUtf8("\"");
   bool res;
   char *tmp_prefix = ltr_int_get_key("Global", "Prefix");
-  if(tmp_prefix != NULL){
+  if(tmp_prefix != nullptr){
     res = true;
     prefix = QString::fromStdString(tmp_prefix);
   }else{
@@ -157,7 +157,7 @@ PrefProxy::~PrefProxy()
 
 PrefProxy& PrefProxy::Pref()
 {
-  if(prf == NULL){
+  if(prf == nullptr){
     prf = new PrefProxy();
   }
   return *prf;
@@ -165,9 +165,9 @@ PrefProxy& PrefProxy::Pref()
 
 void PrefProxy::ClosePrefs()
 {
-  if(prf != NULL){
+  if(prf != nullptr){
     delete prf;
-    prf = NULL;
+    prf = nullptr;
     ltr_int_free_prefs();
   }
 }
@@ -176,7 +176,7 @@ void PrefProxy::SavePrefsOnExit()
 {
   if(ltr_int_need_saving()){
     QMessageBox::StandardButton res;
-    res = QMessageBox::warning(NULL, QString::fromUtf8("Linuxtrack"),
+    res = QMessageBox::warning(nullptr, QString::fromUtf8("Linuxtrack"),
        QString::fromUtf8("Preferences were modified,") +
        QString::fromUtf8("Do you want to save them?"),
        QMessageBox::Save | QMessageBox::Close, QMessageBox::Save);
@@ -202,7 +202,7 @@ bool PrefProxy::createSection(QString
 &sectionName)
 {
   char *tmp = ltr_int_add_unique_section(sectionName.toUtf8().constData());
-  if(tmp != NULL){
+  if(tmp != nullptr){
     sectionName = QString::fromUtf8(tmp);
     return true;
   }else{
@@ -215,7 +215,7 @@ bool PrefProxy::getKeyVal(const QString &sectionName, const QString &keyName,
 			  QString &result)
 {
   char *val = ltr_int_get_key(sectionName.toUtf8().constData(), keyName.toUtf8().constData());
-  if(val != NULL){
+  if(val != nullptr){
     result = QString::fromUtf8(val);
     return true;
   }else{
@@ -226,8 +226,8 @@ bool PrefProxy::getKeyVal(const QString &sectionName, const QString &keyName,
 /*
 bool PrefProxy::getKeyVal(const QString &keyName, QString &result)
 {
-  const char *val = ltr_int_get_key(NULL, keyName.toUtf8().constData());
-  if(val != NULL){
+  const char *val = ltr_int_get_key(nullptr, keyName.toUtf8().constData());
+  if(val != nullptr){
     result = val;
     return true;
   }else{
@@ -271,7 +271,7 @@ bool PrefProxy::setKeyVal(const QString &sectionName, const QString &keyName,
 bool PrefProxy::getFirstDeviceSection(const QString &devType, QString &result)
 {
   char *devName = ltr_int_find_section("Capture-device", devType.toUtf8().constData());
-  if(devName != NULL){
+  if(devName != nullptr){
     result = QString::fromUtf8(devName);
     return true;
   }else{
@@ -288,7 +288,7 @@ bool PrefProxy::getFirstDeviceSection(const QString &devType,
   for(ssize_t i = 0; i < sections.size(); ++i){
     devName = ltr_int_get_key(sections[i].toUtf8().constData(), "Capture-device");
     devIdStr = ltr_int_get_key(sections[i].toUtf8().constData(), "Capture-device-id");
-    if((devName != NULL) && (devIdStr != NULL)){
+    if((devName != nullptr) && (devIdStr != nullptr)){
       if((devType.compare(QString::fromUtf8(devName), Qt::CaseInsensitive) == 0)
          && (devId.compare(QString::fromUtf8(devIdStr), Qt::CaseInsensitive) == 0)){
 	result = QString(sections[i]);
@@ -302,12 +302,12 @@ bool PrefProxy::getFirstDeviceSection(const QString &devType,
 bool PrefProxy::getActiveDevice(deviceType_t &devType, QString &id, QString &secName)
 {
   char *devSection = ltr_int_get_key("Global", "Input");
-  if(devSection == NULL){
+  if(devSection == nullptr){
     return false;
   }
   char *devName = ltr_int_get_key(devSection, "Capture-device");
   char *devId = ltr_int_get_key(devSection, "Capture-device-id");
-  if((devName == NULL) || (devId == NULL)){
+  if((devName == nullptr) || (devId == nullptr)){
     return false;
   }
 
@@ -349,7 +349,7 @@ bool PrefProxy::getActiveDevice(deviceType_t &devType, QString &id)
 bool PrefProxy::getActiveModel(QString &model)
 {
   char *modelSection = ltr_int_get_key("Global", "Model");
-  if(modelSection == NULL){
+  if(modelSection == nullptr){
     return false;
   }
   model = QString::fromUtf8(modelSection);
@@ -375,7 +375,7 @@ bool PrefProxy::getProfiles(QStringList &list)
   list.clear();
   for(size_t i = 0; i < profiles.size(); ++i){
     title = ltr_int_get_key(profiles[i].c_str(), "Title");
-    if(title != NULL){
+    if(title != nullptr){
       list.append(QString::fromUtf8(title));
     }
   }
@@ -385,7 +385,7 @@ bool PrefProxy::getProfiles(QStringList &list)
 bool PrefProxy::getProfileSection(const QString &name, QString &section)
 {
   char *secName = ltr_int_find_section("Title", name.toUtf8().constData());
-  if(secName != NULL){
+  if(secName != nullptr){
     section = QString::fromUtf8(secName);
     return true;
   }
@@ -394,7 +394,7 @@ bool PrefProxy::getProfileSection(const QString &name, QString &section)
 
 bool PrefProxy::savePrefs()
 {
-  bool res = ltr_int_save_prefs(NULL);
+  bool res = ltr_int_save_prefs(nullptr);
   return res;
 }
 
@@ -439,7 +439,7 @@ QString PrefProxy::getRsrcDirPath()
 bool PrefProxy::rereadPrefs()
 {
   ltr_int_free_prefs();
-  ltr_int_read_prefs(NULL, true);
+  ltr_int_read_prefs(nullptr, true);
   checkPrefix(true);
   return true;
 }

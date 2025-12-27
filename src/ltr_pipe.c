@@ -21,7 +21,7 @@
 #include <stdint.h>
 #include <libgen.h>
 #include <linuxtrack.h>
-#include <utils.h>
+#include "utils.h"
 
 #ifdef LINUX
 #include <sys/ioctl.h>

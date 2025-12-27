@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <sys/stat.h>
 #include <string.h>
-#include <utils.h>
+#include "utils.h"
 
 
 //First 5 bytes is MD5 hash of "NaturalPoint"

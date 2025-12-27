@@ -17,18 +17,18 @@ static QString currentId = QString::fromUtf8("None");
 
 
 typedef int (*ltr_int_ps3eye_found_fun_t)(void);
-static ltr_int_ps3eye_found_fun_t ltr_int_ps3eye_found_fun = NULL;
+static ltr_int_ps3eye_found_fun_t ltr_int_ps3eye_found_fun = nullptr;
 static lib_fun_def_t functions[] = {
   {(char *)"ltr_int_ps3eye_found", (void*) &ltr_int_ps3eye_found_fun},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 
 static bool find_p3e(void)
 {
-  void *libhandle = NULL;
+  void *libhandle = nullptr;
   int res = 0;
-  if((libhandle = ltr_int_load_library((char *)"libp3eft", functions)) != NULL){
+  if((libhandle = ltr_int_load_library((char *)"libp3eft", functions)) != nullptr){
     res = ltr_int_ps3eye_found_fun();
     ltr_int_unload_library(libhandle, functions);
   }
@@ -155,7 +155,7 @@ bool MacP3eFtPrefs::Activate(const QString &ID, bool init)
 
     const char *cascade = ltr_int_wc_get_cascade();
     QString cascadePath;
-    if((cascade == NULL) || (!QFile::exists(QString::fromUtf8(cascade)))){
+    if((cascade == nullptr) || (!QFile::exists(QString::fromUtf8(cascade)))){
       cascadePath = PrefProxy::getDataPath(
                       QString::fromUtf8("/haarcascades/haarcascade_frontalface_alt2.xml"));
       ltr_int_wc_set_cascade(cascadePath.toUtf8().constData());
@@ -312,7 +312,7 @@ void MacP3eFtPrefs::on_FindCascadeMac_pressed()
     QDir tmp(path);
     path = tmp.filePath(path);
   }
-  QString fileName = QFileDialog::getOpenFileName(NULL,
+  QString fileName = QFileDialog::getOpenFileName(nullptr,
      QString::fromUtf8("Find Harr/LBP cascade"), path, QString::fromUtf8("xml Files (*.xml)"));
   ui.CascadePathMac->setText(fileName);
   on_CascadePathMac_editingFinished();

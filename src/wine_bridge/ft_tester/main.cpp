@@ -54,7 +54,7 @@ char *client_path() {
                KEY_QUERY_VALUE, &hkey);
   if (!hkey) {
     printf("Can't open registry key\n");
-    return NULL;
+    return nullptr;
   }
 
   BYTE path[1024];
@@ -70,12 +70,12 @@ char *client_path() {
 
 bool start(HWND hwnd) {
   char *libname = client_path();
-  if (libname == NULL) {
+  if (libname == nullptr) {
     printf("Freetrack client not found!\n");
     return false;
   }
   ftclient = LoadLibrary(libname);
-  if (ftclient == NULL) {
+  if (ftclient == nullptr) {
     printf("Couldn't load Freetrack client library '%s'!\n", libname);
     return false;
   }
@@ -88,8 +88,8 @@ bool start(HWND hwnd) {
       (importReportName)(void *)GetProcAddress(ftclient, "FTReportName");
   provider = (importProvider)(void *)GetProcAddress(ftclient, "FTProvider");
 
-  if ((getData == NULL) || (getDllVersion == NULL) || (reportName == NULL) ||
-      (provider == NULL)) {
+  if ((getData == nullptr) || (getDllVersion == nullptr) || (reportName == nullptr) ||
+      (provider == nullptr)) {
     printf("Couldn't load Freetrack client functions!\n");
     FreeLibrary(ftclient);
     return false;

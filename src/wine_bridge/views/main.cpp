@@ -10,7 +10,7 @@
 #include "rest.h"
 
 #ifdef HAVE_CONFIG_H
-  #include "../../../config.h"
+  #include "config.h"
 #endif
 
 
@@ -23,7 +23,7 @@ typedef int (WINAPI *TIRViewsFun_t)(void);
 TIRViewsFun_t TIRViewsVersion;
 TIRViewsFun_t TIRViewsStart;
 TIRViewsFun_t TIRViewsStop;
-char *client = NULL;
+char *client = nullptr;
 
 /*  Make the class name into a global variable  */
 char szClassName[ ] = "LtrWineCtrlApp";
@@ -35,7 +35,7 @@ HWND hwindow;               /* This is the handle for our window */
 int load_fun(HMODULE lib, const char *fun_name, TIRViewsFun_t *fun)
 {
   *fun = (TIRViewsFun_t)GetProcAddress(lib, fun_name);
-  if(*fun == NULL){
+  if(*fun == nullptr){
     printf("Can't locate '%s' function!\n", fun_name);
     return 1;
   }
@@ -44,7 +44,7 @@ int load_fun(HMODULE lib, const char *fun_name, TIRViewsFun_t *fun)
 
 void message_(const char *msg)
 {
-  MessageBox(NULL, msg, "Fake TrackIR problem", 0);
+  MessageBox(nullptr, msg, "Fake TrackIR problem", 0);
 }
 
 UINT_PTR timer = 0;
@@ -95,7 +95,7 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
               return TRUE;
             }
             client = file_path("NPClient.dll");
-            if(client == NULL){
+            if(client == nullptr){
               message_("Couldn't locate NPClient.dll");
               return TRUE;
             }
@@ -117,9 +117,9 @@ LRESULT CALLBACK WindowProcedure (HWND hwnd, UINT message, WPARAM wParam, LPARAM
                    if(timer != 0){
                      KillTimer(hwnd, timer);
                    }
-                   if(client != NULL){
+                   if(client != nullptr){
                      free(client);
-                     client = NULL;
+                     client = nullptr;
                    }
           DestroyWindow(hwnd);
           break;
@@ -149,8 +149,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
     hidden = true;
   }
 
-  mutex = CreateMutex(NULL, TRUE, "linuxtrack_wine_fake_trackir_mutex");
-  if(mutex == NULL){
+  mutex = CreateMutex(nullptr, TRUE, "linuxtrack_wine_fake_trackir_mutex");
+  if(mutex == nullptr){
     message_("Can't create mutex.");
     return 0;
   }
@@ -170,8 +170,8 @@ int WINAPI WinMain (HINSTANCE hThisInstance,
   /* Use default icon and mouse-pointer */
   wincl.hIcon = LoadIcon (hThisInstance, MAKEINTRESOURCE(1002));
   wincl.hIconSm = LoadIcon (hThisInstance, MAKEINTRESOURCE(1001));
-  wincl.hCursor = LoadCursor (NULL, IDC_ARROW);
-  wincl.lpszMenuName = NULL;                 /* No menu */
+  wincl.hCursor = LoadCursor (nullptr, IDC_ARROW);
+  wincl.lpszMenuName = nullptr;                 /* No menu */
   wincl.cbClsExtra = 0;                      /* No extra bytes after the window class */
   wincl.cbWndExtra = 0;                      /* structure or the window instance */
   /* Use Windows's default colour as the background of the window */

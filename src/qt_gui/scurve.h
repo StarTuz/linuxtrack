@@ -6,7 +6,7 @@
 
 #include "ui_scurve.h"
 #include "scview.h"
-#include <axis.h>
+#include "axis.h"
 
 class SCurve : public QWidget{
   Q_OBJECT

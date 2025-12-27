@@ -56,17 +56,17 @@ void write_prefs()
   }
   
   LONG result = RegCreateKeyEx(HKEY_LOCAL_MACHINE, "Software\\Linuxtrack", 0, NULL, 
-                               REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hkey, NULL);
+                               REG_OPTION_NON_VOLATILE, KEY_WRITE, NULL, &hkey, nullptr);
   if(result != ERROR_SUCCESS){
     printf("Can't create registry key...\n");
     return;
   }
-  char *val = NULL;
+  char *val = nullptr;
   
   if(asprintf(&val, "0X%X 0X%X", pause_code, recenter_code) > 0){
     result = RegSetValueEx(hkey, "DIKeys", 0, REG_SZ, (unsigned char *)val, strlen(val)+1);
     free(val);
-    val = NULL;
+    val = nullptr;
     if(result != ERROR_SUCCESS){
       printf("Can't store registry key...\n");
     }
@@ -128,25 +128,25 @@ bool kbi_init(HWND hwnd)
   // --- Start of DirectInput initialization ---
   // Create the abstract DirectInput connection
   DirectInput8Create(
-    GetModuleHandle(NULL),
+    GetModuleHandle(nullptr),
     DIRECTINPUT_VERSION,
     IID_IDirectInput8,
     (void**)&fDI,
     NULL
   );
-  if (fDI == NULL){
-    MessageBox(NULL, "DirectInput Connection Creation Failed!", "Controler", MB_OK);
+  if (fDI == nullptr){
+    MessageBox(nullptr, "DirectInput Connection Creation Failed!", "Controler", MB_OK);
     return FALSE;
   }
   //unnamed autoreset event with default security attrs, initially unsignalled
-  kbd_event = CreateEvent(NULL, FALSE, FALSE, NULL);
-  if(kbd_event == NULL){
-    MessageBox(NULL, "Failed to create event!", "Controler", MB_OK);
+  kbd_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+  if(kbd_event == nullptr){
+    MessageBox(nullptr, "Failed to create event!", "Controler", MB_OK);
     return FALSE;
   }
   
   // Create the connection to the keyboard device
-  fDI->CreateDevice(GUID_SysKeyboard, &fDIKeyboard, NULL);
+  fDI->CreateDevice(GUID_SysKeyboard, &fDIKeyboard, nullptr);
   if (fDIKeyboard){
     
     fDIKeyboard->EnumObjects((LPDIENUMDEVICEOBJECTSCALLBACK)cbk, NULL, DIDFT_ALL);
@@ -164,24 +164,24 @@ bool kbi_init(HWND hwnd)
     dipdw.dwData = 10; 
     hr = fDIKeyboard->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
     if((hr != DI_OK) && (hr != DI_PROPNOEFFECT)){
-      MessageBox(NULL, "Failed to set kbd property!", "Controler", MB_OK);
+      MessageBox(nullptr, "Failed to set kbd property!", "Controler", MB_OK);
       return FALSE;
     }
     res = fDIKeyboard->SetEventNotification(kbd_event);
     if((res != DI_OK) && (res != DI_POLLEDDEVICE)){
-      MessageBox(NULL, "Failed to register event!", "Controler", MB_OK);
+      MessageBox(nullptr, "Failed to register event!", "Controler", MB_OK);
       return FALSE;
     }
     fDIKeyboard->Acquire();
   }else{
-    MessageBox(NULL, "DirectInput Keyboard initialization Failed!", "Controler", MB_OK);
+    MessageBox(nullptr, "DirectInput Keyboard initialization Failed!", "Controler", MB_OK);
     return FALSE;
   } 
   // --- End of DirectInput initialization ---
   read_prefs();
   send_keys_desc();
   if(linuxtrack_init("Default") < LINUXTRACK_OK){
-    MessageBox(NULL, "Can't start linuxtrack!!!", "Controler", MB_OK);
+    MessageBox(nullptr, "Can't start linuxtrack!!!", "Controler", MB_OK);
     exit(1);
   }
   return TRUE;
@@ -192,7 +192,7 @@ void kbi_close(void)
   linuxtrack_shutdown();
   write_prefs();
   fDIKeyboard->Unacquire();    // make sure the keyboard is unacquired
-  fDIKeyboard->SetEventNotification(NULL);
+  fDIKeyboard->SetEventNotification(nullptr);
   CloseHandle(kbd_event);
   fDI->Release();    // close DirectInput before exiting
 }

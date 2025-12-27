@@ -8,7 +8,7 @@
 #include <math.h>
 
 SCurve::SCurve(axis_t a, QString axis_name, QString left_label, QString right_label, QWidget *parent)
-  : QWidget(parent), axis(a), symetrical(true), view(NULL), first(true)
+  : QWidget(parent), axis(a), symetrical(true), view(nullptr), first(true)
 {
   symetrical = TRACKER.axisIsSymetrical(axis);
   ui.setupUi(this);

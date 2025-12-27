@@ -9,11 +9,11 @@
 #include <iostream>
 #include <ltr_show.h>
 #include <ltr_gui_prefs.h>
-#include <cal.h>
-#include <utils.h>
+#include "cal.h"
+#include "utils.h"
 #include <pref_global.h>
-#include <pref.hpp>
-#include <tracking.h>
+#include "pref.hpp"
+#include "tracking.h"
 #include <iostream>
 #include <scp_form.h>
 #include <ltr_state.h>
@@ -21,7 +21,7 @@
 
 #include <linuxtrack.h>
 #include <ltr_server.h>
-#include <ipc_utils.h>
+#include "ipc_utils.h"
 #include <unistd.h>
 #include <tracker.h>
 
@@ -39,7 +39,7 @@ static int fps_ptr = 0;
 
 
 LtrGuiForm::LtrGuiForm(const Ui::LinuxtrackMainForm &tmp_gui, QSettings &settings)
-              : glw(NULL), cv(NULL), allowClose(false), main_gui(tmp_gui)
+              : glw(nullptr), cv(nullptr), allowClose(false), main_gui(tmp_gui)
 {
   ui.setupUi(this);
   cv = new CameraView(label);
@@ -238,7 +238,7 @@ void LtrGuiForm::allowCloseWindow()
 
 void LtrGuiForm::on_tabWidget_currentChanged(int index)
 {
-  if(glw == NULL){
+  if(glw == nullptr){
     return;
   }
   if(index == 1){

@@ -1,7 +1,7 @@
 #include "tracker.h"
-#include <tracking.h>
-#include <pref.hpp>
-#include <axis.h>
+#include "tracking.h"
+#include "pref.hpp"
+#include "axis.h"
 #include <ltlib.h>
 #include <../ltr_srv_master.h>
 #include <../ltr_srv_slave.h>
@@ -12,8 +12,8 @@
 #include <QApplication>
 #include <QMessageBox>
 
-Tracker *Tracker::trr = NULL;
-char *com_fname = NULL;
+Tracker *Tracker::trr = nullptr;
+char *com_fname = nullptr;
 
 class MasterThread : public QThread{
   public:
@@ -27,7 +27,7 @@ void MasterThread::run()
 
 Tracker& Tracker::trackerInst()
 {
-  if(trr == NULL){
+  if(trr == nullptr){
     trr = new Tracker();
   }
   return *trr;
@@ -60,14 +60,14 @@ static void ltr_int_new_frame(struct frame_type *frame, void *param)
     initBuffers = false;
   }
 
-  if(frame->bitmap != NULL){
+  if(frame->bitmap != nullptr){
     buf.bufferWritten();
   }
   buffer *b;
   if(buf.writeBuffer(&b)){
     frame->bitmap = b->getBuffer();
   }else{
-    frame->bitmap = NULL;
+    frame->bitmap = nullptr;
   }
 
   TRACKER.signalNewFrame(&local_frame);
@@ -86,7 +86,7 @@ Tracker::Tracker() : axes(LTR_AXES_T_INITIALIZER), axes_valid(false),
   currentProfile(QString::fromUtf8("Default")), common_ff(0.0)
 {
   if(!ltr_int_gui_lock(true)){
-    QMessageBox::warning(NULL, QString::fromUtf8("Linuxtrack"),
+    QMessageBox::warning(nullptr, QString::fromUtf8("Linuxtrack"),
       QString::fromUtf8("Another linuxtrack gui is running already!"),
                          QMessageBox::Ok);
   }
@@ -136,10 +136,10 @@ void Tracker::signalNewSlave(const char *name)
       ltr_int_change(name, i, j, ltr_int_get_axis_param(tmp_axes, (axis_t)i, (axis_param_t)j));
     }
   }
-  ltr_int_change(NULL, MISC, MISC_LEGR, ltr_int_use_oldrot()?1.0:0.0);
-  ltr_int_change(NULL, MISC, MISC_ALTER, ltr_int_use_alter()?1.0:0.0);
-  ltr_int_change(NULL, MISC, MISC_ALIGN, ltr_int_do_tr_align()?1.0:0.0);
-  ltr_int_change(NULL, MISC, MISC_FOCAL_LENGTH, ltr_int_get_focal_length());
+  ltr_int_change(nullptr, MISC, MISC_LEGR, ltr_int_use_oldrot()?1.0:0.0);
+  ltr_int_change(nullptr, MISC, MISC_ALTER, ltr_int_use_alter()?1.0:0.0);
+  ltr_int_change(nullptr, MISC, MISC_ALIGN, ltr_int_do_tr_align()?1.0:0.0);
+  ltr_int_change(nullptr, MISC, MISC_FOCAL_LENGTH, ltr_int_get_focal_length());
   ltr_int_close_axes(&tmp_axes);
 }
 
@@ -217,13 +217,13 @@ bool Tracker::axisChange(axis_t axis, axis_param_t elem, bool enabled)
 
 bool Tracker::miscChange(axis_param_t elem, bool enabled)
 {
-  ltr_int_change(NULL, MISC, elem, enabled?1.0:0.0);
+  ltr_int_change(nullptr, MISC, elem, enabled?1.0:0.0);
   return true;
 }
 
 bool Tracker::miscChange(axis_param_t elem, float val)
 {
-  ltr_int_change(NULL, MISC, elem, val);
+  ltr_int_change(nullptr, MISC, elem, val);
   return true;
 }
 

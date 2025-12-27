@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <com_proc.h>
-#include <utils.h>
+#include "utils.h"
 
 static char *contactFile = ".linuxtrack_wii";
 static char *prefFile = ".linuxtrack_wii.lock";

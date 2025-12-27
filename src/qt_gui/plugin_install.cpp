@@ -10,7 +10,7 @@
 #include <zlib.h>
 
 #ifdef HAVE_CONFIG_H
-#include "../../config.h"
+#include "config.h"
 #endif
 
 PluginInstall::PluginInstall(const Ui::LinuxtrackMainForm &ui, QObject *parent)

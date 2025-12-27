@@ -4,8 +4,8 @@
 #include <QObject>
 #include <QThread>
 #include <linuxtrack.h>
-#include <axis.h>
-#include <cal.h>
+#include "axis.h"
+#include "cal.h"
 #include "buffering.h"
 
 #define TRACKER Tracker::trackerInst()

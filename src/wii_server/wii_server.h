@@ -2,10 +2,10 @@
 #define WII_SERVER__H
 
 #ifdef HAVE_CONFIG_H
-  #include "../../config.h"
+  #include "config.h"
 #endif
 
-#include <wii_com.h>
+#include "wii_com.h"
 #include <com_proc.h>
 #include "wiimote.h"
 #include "ui_wii_server.h"

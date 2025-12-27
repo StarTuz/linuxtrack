@@ -1,10 +1,10 @@
 #include <linux/types.h>
 #include <webcam_driver.h>
-#include <utils.h>
+#include "utils.h"
 #include <string.h>
 
-#include <cal.h>
-#include <pref.h>
+#include "cal.h"
+#include "pref.h"
 #include <pref_int.h>
 
 #include <stdio.h>

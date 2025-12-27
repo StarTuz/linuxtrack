@@ -150,10 +150,10 @@ static void obj_init(object_t &obj) {
 
 void read_obj() {
   char *obj_list[] = {(char *)"sphere.obj", (char *)"sparow_opaq.obj",
-                      (char *)"sparow_glass.obj", NULL};
+                      (char *)"sparow_glass.obj",  nullptr};
 
   std::cerr << "read_obj: Starting to load objects...\n";
-  for (int i = 0; obj_list[i] != NULL; ++i) {
+  for (int i = 0; obj_list[i] != nullptr; ++i) {
     QString path = PrefProxy::getDataPath(QString::fromUtf8(obj_list[i]));
     std::cerr << "read_obj: Trying to load " << obj_list[i] << " from "
               << path.toStdString() << "\n";

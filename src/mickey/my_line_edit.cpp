@@ -3,7 +3,7 @@
 #include <iostream>
 #include <QKeyEvent>
 
-myLineEdit::myLineEdit(QWidget *parent) : QLineEdit(parent), tgt(NULL)
+myLineEdit::myLineEdit(QWidget *parent) : QLineEdit(parent), tgt(nullptr)
 {
 }
 
@@ -37,7 +37,7 @@ void myLineEdit::keyPressEvent(QKeyEvent * event)
     default:
       seq += QKeySequence(event->key()).toString(QKeySequence::NativeText);
       setText(seq);
-      if(tgt != NULL){
+      if(tgt != nullptr){
         *tgt = seq; 
       }
       //std::cout<<"Key event -> '"<<seq.toUtf8().constData()<<"' !"<<k<<"\n";

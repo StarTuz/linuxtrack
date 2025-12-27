@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-#include "../../config.h"
+#include "config.h"
 #endif
 
 #include "ltr_gui_prefs.h"
@@ -14,7 +14,7 @@
 static QMessageBox::StandardButton warningMessage(const QString &message) {
   ltr_int_log_message("XPlane plugin install - %s\n",
                       message.toUtf8().constData());
-  return QMessageBox::warning(NULL, QString::fromUtf8("Linuxtrack"), message,
+  return QMessageBox::warning(nullptr, QString::fromUtf8("Linuxtrack"), message,
                               QMessageBox::Ok);
 }
 
@@ -129,7 +129,7 @@ void XPluginInstall::on_BrowseXPlane_pressed() {
   if (installPlugin(sourceFile, destPath + QString::fromUtf8("/mac.xpl"))) {
 #endif
     QMessageBox::information(
-        NULL, QString::fromUtf8("Linuxtrack"),
+        nullptr, QString::fromUtf8("Linuxtrack"),
         QString::fromUtf8("XPlane plugin installed successfuly!"));
   } else {
     warningMessage(QString::fromUtf8("XPlane plugin installation failed!"));

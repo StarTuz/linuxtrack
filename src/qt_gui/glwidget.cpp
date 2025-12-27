@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-#include "../../config.h"
+#include "config.h"
 #endif
 
 #include "glwidget.h"
@@ -96,7 +96,7 @@ void GLWidget::objectsRead() {
 }
 
 GLWidget::GLWidget(QWidget *parent)
-    : GLWIDGET_BASE(parent), rt(new ReaderThread())
+    : GLWIDGET_BASE(parent), rt(std::make_unique<ReaderThread>())
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
       ,
       program(nullptr), texture(nullptr), vertexCount(0), objectsLoaded(false),
@@ -119,7 +119,7 @@ GLWidget::GLWidget(QWidget *parent)
   trolltechPurple = QColor::fromCmykF(0.0, 0.0, 0.0, 0.0);
 #endif
 
-  connect(rt, SIGNAL(done()), this, SLOT(objectsRead()));
+  connect(rt.get(), SIGNAL(done()), this, SLOT(objectsRead()));
   rt->start();
 }
 
@@ -129,8 +129,7 @@ GLWidget::~GLWidget() {
   }
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   makeCurrent();
-  delete program;
-  program = nullptr;
+  program.reset();
   delete texture;
   texture = nullptr;
   vbo.destroy();
@@ -155,7 +154,6 @@ GLWidget::~GLWidget() {
     glDeleteLists(*i, 1);
   }
 #endif
-  delete rt;
 }
 
 QSize GLWidget::minimumSizeHint() const { return QSize(50, 50); }
@@ -189,7 +187,7 @@ void GLWidget::initializeGL() {
             << (glVersion ? glVersion : "NULL") << "\n";
 
   // Create Shader Program
-  program = new QOpenGLShaderProgram;
+  program = std::make_unique<QOpenGLShaderProgram>();
 
   if (!program->addShaderFromSourceCode(QOpenGLShader::Vertex,
                                         vertexShaderSource)) {

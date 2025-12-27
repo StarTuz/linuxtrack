@@ -67,7 +67,7 @@ protected:
 private slots:
   void on_CreateModelButton_pressed();
   void ModelCreated(const QString &section);
-  void on_ModelSelector_activated(const QString &text);
+  void modelSelectorActivated(const QString &text);
 signals:
   void modelSelected(int modelType);
 

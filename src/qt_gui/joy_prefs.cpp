@@ -13,20 +13,20 @@ typedef void (*free_axes_t)(axes_t axes);
 typedef joystickNames_t *(*enum_joysticks_t)(ifc_type_t ifc);
 typedef void (*free_joysticks_t)(joystickNames_t *nl);
 
-static enum_axes_t enum_axes_fun = NULL;
-static free_axes_t free_axes_fun = NULL;
-static enum_joysticks_t enum_joysticks_fun = NULL;
-static free_joysticks_t free_joysticks_fun = NULL;
+static enum_axes_t enum_axes_fun = nullptr;
+static free_axes_t free_axes_fun = nullptr;
+static enum_joysticks_t enum_joysticks_fun = nullptr;
+static free_joysticks_t free_joysticks_fun = nullptr;
 
 static lib_fun_def_t functions[] = {
   {(char *)"ltr_int_joy_enum_axes", (void*) &enum_axes_fun},
   {(char *)"ltr_int_joy_free_axes", (void*) &free_axes_fun},
   {(char *)"ltr_int_joy_enum_joysticks", (void*) &enum_joysticks_fun},
   {(char *)"ltr_int_joy_free_joysticks", (void*) &free_joysticks_fun},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
-void *JoyPrefs::libhandle = NULL;
+void *JoyPrefs::libhandle = nullptr;
 
 JoyPrefs::JoyPrefs(const QString &dev_id, QWidget *parent) : QWidget(parent), id(dev_id), initializing(false)
 {
@@ -39,7 +39,7 @@ JoyPrefs::~JoyPrefs()
   if(libhandle){
     //printf("Unloading library....\n");
     ltr_int_unload_library(libhandle, functions);
-    libhandle = NULL;
+    libhandle = nullptr;
   }
 }
 
@@ -63,12 +63,12 @@ static bool enumerateAxes(ifc_type_t ifc, const QString &joyName)
 
 bool JoyPrefs::Activate(const QString &ID, bool init)
 {
-  if(libhandle == NULL){
+  if(libhandle == nullptr){
     //printf("Libhandle NULL...\n");
     //printf("Loading libjoy...\n");
     libhandle = ltr_int_load_library((char *)"libjoy", functions);
     //printf("Libjoy loaded? %p\n", libhandle);
-    if(libhandle == NULL){
+    if(libhandle == nullptr){
       return false;
     }
   }
@@ -195,12 +195,12 @@ static bool enumerateJoysticks(QStringList &joyList)
 
 bool JoyPrefs::AddAvailableDevices(QComboBox &combo)
 {
-  if(libhandle == NULL){
+  if(libhandle == nullptr){
     //printf("Libhandle NULL...\n");
     //printf("Loading libjoy...\n");
     libhandle = ltr_int_load_library((char *)"libjoy", functions);
     //printf("Libjoy loaded? %p\n", libhandle);
-    if(libhandle == NULL){
+    if(libhandle == nullptr){
       return false;
     }
   }

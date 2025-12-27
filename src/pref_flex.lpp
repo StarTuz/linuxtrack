@@ -10,8 +10,6 @@
 %option nounput
 %option noinput
 %option yylineno
-%option outfile="lex.yy.c"
-%option header-file="../pref_flex.h"
 %option prefix="ltr_int_parser_"
 
 %x VALUE SEC_NAME

@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QTimer>
-#include <axis.h>
+#include "axis.h"
 #include <ltlib.h>
 
 class SCView : public QWidget

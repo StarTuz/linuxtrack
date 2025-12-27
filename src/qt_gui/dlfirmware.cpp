@@ -8,7 +8,7 @@
 //#include <QtNetwork>
 #include <iostream>
 
-DLFirmware::DLFirmware(): file(NULL), reply(NULL), busy(false) 
+DLFirmware::DLFirmware(): file(nullptr), reply(nullptr), busy(false) 
 {
   mgr = new QNetworkAccessManager(this);
   connect(mgr, SIGNAL(finished(QNetworkReply*)), 
@@ -20,7 +20,7 @@ DLFirmware::~DLFirmware()
   if(file && file->isOpen()){
     file->close();
   }
-  if(reply != NULL){
+  if(reply != nullptr){
     delete reply;
   }
   delete mgr;

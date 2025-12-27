@@ -15,7 +15,7 @@ Pro: corner situation resolved
 Con: small performance hit - copying the memory; but only when capturing...
 */
 
-QVector<QRgb> *buffer::palette = NULL;
+QVector<QRgb> *buffer::palette = nullptr;
 
 void buffer::initPalette()
 {
@@ -26,16 +26,16 @@ void buffer::initPalette()
   }
 }
 
-buffer::buffer(): buf(NULL), img(NULL), w(0), h(0)
+buffer::buffer(): buf(nullptr), img(nullptr), w(0), h(0)
 {
-  if(palette == NULL){
+  if(palette == nullptr){
     initPalette();
   }
 }
 
 void buffer::clearBuffer()
 {
-  if(buf != NULL){
+  if(buf != nullptr){
     memset(buf, 0, w * h);
   }
 }
@@ -46,7 +46,7 @@ bool buffer::resizeBuffer(int width, int height)
     return true;
   }
   delete img;
-  img = NULL;
+  img = nullptr;
   free(buf);
   w = width;
   h = height;
@@ -147,14 +147,14 @@ int main(int argc, char *argv[])
   //std::cout<<"Hello World!\n";
   
   buffering b(3);
-  buffer *buf = NULL;
+  buffer *buf = nullptr;
   assert(!b.readBuffer(&buf));
-  buf = NULL;
-  assert(b.writeBuffer(&buf) && (buf != NULL));
+  buf = nullptr;
+  assert(b.writeBuffer(&buf) && (buf != nullptr));
   assert(!b.writeBuffer(&buf));  
   b.bufferWritten();
-  buf = NULL;
-  assert(b.readBuffer(&buf) && (buf != NULL));
+  buf = nullptr;
+  assert(b.readBuffer(&buf) && (buf != nullptr));
   b.bufferRead();
   return 0;
 }

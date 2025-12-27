@@ -36,7 +36,7 @@ MacWebcamPrefs::~MacWebcamPrefs()
   ltr_int_wc_close_prefs();
 }
 
-static MacWebcamInfo *wc_info = NULL;
+static MacWebcamInfo *wc_info = nullptr;
 
 void MacWebcamPrefs::on_WebcamResolutionsMac_activated(int index)
 {
@@ -82,7 +82,7 @@ bool MacWebcamPrefs::Activate(const QString &ID, bool init)
   currentId = ID;
   ui.WebcamResolutionsMac->clear();
   if((currentId != QString::fromUtf8("None")) && (currentId.size() != 0)){
-    if(wc_info != NULL){
+    if(wc_info != nullptr){
       delete(wc_info);
     }
     wc_info = new MacWebcamInfo(currentId);

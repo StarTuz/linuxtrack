@@ -29,7 +29,7 @@ void WiiThread::idle()
   }
 }
 
-static WiiThread *target_class = NULL;
+static WiiThread *target_class = nullptr;
 
 static void wii_callback(cwiid_wiimote_t *wii, int count, union cwiid_mesg mesg[], struct timespec *time)
 {
@@ -43,12 +43,12 @@ static void wii_callback(cwiid_wiimote_t *wii, int count, union cwiid_mesg mesg[
         printf("  Status - battery: %d\n", mesg[i].status_mesg.battery);
         break;
       case CWIID_MESG_IR:
-        if(target_class != NULL) target_class->pass_ir_data(mesg[i].ir_mesg.src);
+        if(target_class != nullptr) target_class->pass_ir_data(mesg[i].ir_mesg.src);
         break;
       case CWIID_MESG_ERROR:
         if(mesg[i].error_mesg.error != CWIID_ERROR_NONE){
           printf("Got disconnected!\n");
-          if(target_class != NULL) target_class->stop_it();
+          if(target_class != nullptr) target_class->stop_it();
         }
         break;
       default:
@@ -84,9 +84,9 @@ void WiiThread::run()
     
     msleep(8);
   }
-  cwiid_set_mesg_callback(gWiimote, NULL);
+  cwiid_set_mesg_callback(gWiimote, nullptr);
   cwiid_close(gWiimote);
-  gWiimote = NULL;
+  gWiimote = nullptr;
   emit change_state(WII_DISCONNECTED);
 }
 
@@ -139,7 +139,7 @@ void WiiThread::stop_it()
 
 void WiiThread::pause(int indication)
 {
-  if(gWiimote != NULL){
+  if(gWiimote != nullptr){
     //printf("Indication: %02X\n", indication);
     cwiid_set_led(gWiimote, indication);
     cwiid_set_rpt_mode(gWiimote, CWIID_RPT_STATUS);
@@ -149,7 +149,7 @@ void WiiThread::pause(int indication)
 
 void WiiThread::wakeup(int indication)
 {
-  if(gWiimote != NULL){
+  if(gWiimote != nullptr){
    //printf("Indication: %02X\n", indication);
    cwiid_set_led(gWiimote, indication);
    cwiid_set_rpt_mode(gWiimote, CWIID_RPT_STATUS | CWIID_RPT_IR);
@@ -159,13 +159,13 @@ void WiiThread::wakeup(int indication)
 
 void WiiThread::stop()
 {
-  if(gWiimote != NULL){
+  if(gWiimote != nullptr){
     cwiid_set_rpt_mode(gWiimote, CWIID_RPT_STATUS);
   }
   isIdle = true;
 }
 
-Wiimote::Wiimote(struct mmap_s *m) : server_state(WII_DISCONNECTED), thread(NULL)
+Wiimote::Wiimote(struct mmap_s *m) : server_state(WII_DISCONNECTED), thread(nullptr)
 {
   mm = m;
   thread = new WiiThread(); 

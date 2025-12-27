@@ -93,15 +93,23 @@ static struct func_defs_t functions[] = {
     {(char *)NULL, NULL, 0}};
 
 static const char *lib_locations[] = {
-    "/Frameworks/liblinuxtrack.0.dylib", "/lib/linuxtrack/liblinuxtrack.so.0",
+    "/Frameworks/liblinuxtrack.dylib",
+    /* Local prefix paths (standard) */
+    "/lib/linuxtrack/liblinuxtrack32.so.0",
+    "/lib/linuxtrack/liblinuxtrack32.so", "/lib/linuxtrack/liblinuxtrack.so.0",
+    "/lib/linuxtrack/liblinuxtrack.so", "/lib/liblinuxtrack32.so.0",
+    "/lib/liblinuxtrack32.so", "/lib/liblinuxtrack.so.0",
+    "/lib/liblinuxtrack.so",
+    /* Architecture specific subdirs */
     "/lib32/linuxtrack/liblinuxtrack32.so.0",
-    "/lib/i386-linux-gnu/linuxtrack/liblinuxtrack.so.0",
+    "/lib32/linuxtrack/liblinuxtrack32.so",
+    "/lib64/linuxtrack/liblinuxtrack.so.0",
+    "/lib64/linuxtrack/liblinuxtrack.so",
+    /* Multiarch paths */
     "/lib/i386-linux-gnu/linuxtrack/liblinuxtrack32.so.0",
+    "/lib/i386-linux-gnu/linuxtrack/liblinuxtrack32.so",
     "/lib/x86_64-linux-gnu/linuxtrack/liblinuxtrack.so.0",
-    /* old paths */
-    "/lib/liblinuxtrack.so.0", "/lib32/liblinuxtrack.so.0",
-    "/lib32/liblinuxtrack32.so.0", "/lib/i386-linux-gnu/liblinuxtrack.so.0",
-    "/lib/x86_64-linux-gnu/liblinuxtrack.so.0", NULL};
+    "/lib/x86_64-linux-gnu/linuxtrack/liblinuxtrack.so", NULL};
 
 static FILE *log_f = NULL;
 static char logfname[] = "/tmp/linuxtrack.logXXXXXX";

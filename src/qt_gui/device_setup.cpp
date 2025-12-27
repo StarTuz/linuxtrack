@@ -1,5 +1,5 @@
 #ifdef HAVE_CONFIG_H
-  #include "../../config.h"
+  #include "config.h"
 #endif
 
 #include "device_setup.h"
@@ -51,7 +51,7 @@ int DeviceSetup::orientValues[] = {ORIENT_NOP, // 0
                                    ORIENT_FLIP_X | ORIENT_XCHG_XY | ORIENT_FROM_BEHIND}; // 13
 
 DeviceSetup::DeviceSetup(Guardian *grd, QBoxLayout *tgt, QWidget *parent)
-  : QWidget(parent), devPrefs(NULL), target(tgt)
+  : QWidget(parent), devPrefs(nullptr), target(tgt)
 {
   grd->regTgt(this);
   ui.setupUi(this);
@@ -61,10 +61,10 @@ DeviceSetup::DeviceSetup(Guardian *grd, QBoxLayout *tgt, QWidget *parent)
 
 DeviceSetup::~DeviceSetup()
 {
-  if(devPrefs != NULL){
+  if(devPrefs != nullptr){
     target->removeWidget(devPrefs);
     delete devPrefs;
-    devPrefs = NULL;
+    devPrefs = nullptr;
   }
 }
 
@@ -96,10 +96,10 @@ void DeviceSetup::on_DeviceSelector_activated(int index)
   if(index < 0){
     return;
   }
-  if(devPrefs != NULL){
+  if(devPrefs != nullptr){
     target->removeWidget(devPrefs);
     delete devPrefs;
-    devPrefs = NULL;
+    devPrefs = nullptr;
   }
   QVariant v = ui.DeviceSelector->itemData(index);
   PrefsLink pl = v.value<PrefsLink>();
@@ -142,7 +142,7 @@ void DeviceSetup::on_DeviceSelector_activated(int index)
     devPrefs = new TirPrefs(pl.ID, this);
     emit deviceTypeChanged(pl.deviceType, QString::fromUtf8("TrackIR"));
   }
-  if(devPrefs != NULL){
+  if(devPrefs != nullptr){
     target->insertWidget(-1, devPrefs);
   }
 }

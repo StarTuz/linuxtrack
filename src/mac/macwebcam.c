@@ -3,9 +3,9 @@
 
 #include "args.h"
 #include <com_proc.h>
-#include <ipc_utils.h>
+#include "ipc_utils.h"
 #include "mac_camera.h"
-#include <utils.h>
+#include "utils.h"
 
 struct mmap_s mmm;
 

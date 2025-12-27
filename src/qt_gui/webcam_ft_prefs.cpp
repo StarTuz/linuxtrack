@@ -21,7 +21,7 @@ WebcamFtPrefs::~WebcamFtPrefs()
 }
 
 
-static WebcamInfo *wc_info = NULL;
+static WebcamInfo *wc_info = nullptr;
 
 void WebcamFtPrefs::on_WebcamFtFormats_activated(int index)
 {
@@ -98,7 +98,7 @@ bool WebcamFtPrefs::Activate(const QString &ID, bool init)
   ui.WebcamFtFormats->clear();
   ui.WebcamFtResolutions->clear();
   if((currentId != QString::fromUtf8("None")) && (currentId.size() != 0)){
-    if(wc_info != NULL){
+    if(wc_info != nullptr){
       delete(wc_info);
     }
     wc_info = new WebcamInfo(currentId);
@@ -108,7 +108,7 @@ bool WebcamFtPrefs::Activate(const QString &ID, bool init)
     QString fourcc, thres, bmin, bmax, res, fps, flip;
     int fmt_index = 0;
     const char *tmp = ltr_int_wc_get_pixfmt();
-    if(tmp != NULL){
+    if(tmp != nullptr){
       fourcc = QString::fromUtf8(tmp);
       fmt_index = wc_info->findFourcc(fourcc);
       ui.WebcamFtFormats->setCurrentIndex(fmt_index);
@@ -116,7 +116,7 @@ bool WebcamFtPrefs::Activate(const QString &ID, bool init)
     on_WebcamFtFormats_activated(fmt_index);
     const char *cascade = ltr_int_wc_get_cascade();
     QString cascadePath;
-    if((cascade == NULL) || (!QFile::exists(QString::fromUtf8(cascade)))){
+    if((cascade == nullptr) || (!QFile::exists(QString::fromUtf8(cascade)))){
       cascadePath = PrefProxy::getDataPath(QString::fromUtf8("haarcascade_frontalface_alt2.xml"));
       ltr_int_wc_set_cascade(cascadePath.toUtf8().constData());
     }else{
@@ -170,7 +170,7 @@ void WebcamFtPrefs::on_FindCascade_pressed()
     QDir tmp(path);
     path = tmp.filePath(path);
   }
-  QString fileName = QFileDialog::getOpenFileName(NULL,
+  QString fileName = QFileDialog::getOpenFileName(nullptr,
      QString::fromUtf8("Find Harr/LBP cascade"), path, QString::fromUtf8("xml Files (*.xml)"));
   ui.CascadePath->setText(fileName);
   on_CascadePath_editingFinished();

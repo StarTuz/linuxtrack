@@ -1,12 +1,12 @@
 
 #include "ltr_state.h"
-#include <ltlib_int.h>
+#include "ltlib_int.h"
 
-TrackerState *TrackerState::ts = NULL;
+TrackerState *TrackerState::ts = nullptr;
 
 TrackerState& TrackerState::trackerStateInst()
 {
-  if(ts == NULL){
+  if(ts == nullptr){
     ts = new TrackerState();
   }
   return *ts;

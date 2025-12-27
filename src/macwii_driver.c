@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <string.h>
-#include <cal.h>
+#include "cal.h"
 #include "com_proc.h"
 #include "ipc_utils.h"
 #include "wii_driver_prefs.h"

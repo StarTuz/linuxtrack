@@ -66,11 +66,11 @@ class device_model
 };
 */
 
-device_model *model = NULL;
+device_model *model = nullptr;
 
 bool init_model(char fname[], int type)
 {
-  if(model == NULL){
+  if(model == nullptr){
     switch(type){
       case SMARTNAV4:
         model = new smartnav4(fname);
@@ -105,9 +105,9 @@ void fakeusb_receive(int ep, unsigned char data[], size_t length, size_t *read, 
 
 void close_model()
 {
-  if(model != NULL){
+  if(model != nullptr){
     delete model;
-    model = NULL;
+    model = nullptr;
   }
 }
 

@@ -15,7 +15,7 @@
 #include <cmath>
 
 ModelCreate::ModelCreate(QWidget *parent)
-    : QDialog(parent), validator(NULL), modelEditor(NULL) {
+    : QDialog(parent), validator(nullptr), modelEditor(nullptr) {
   ui.setupUi(this);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   validator = new QRegularExpressionValidator(
@@ -30,9 +30,9 @@ ModelCreate::ModelCreate(QWidget *parent)
 ModelCreate::~ModelCreate() {
   delete validator;
   removeEditor();
-  if (modelEditor != NULL) {
+  if (modelEditor != nullptr) {
     delete modelEditor;
-    modelEditor = NULL;
+    modelEditor = nullptr;
   }
 }
 
@@ -49,7 +49,7 @@ void ModelCreate::on_CreateButton_pressed() {
   QStringList sectionList;
   PREF.getSectionList(sectionList);
   if (sec.isEmpty()) {
-    QMessageBox::warning(NULL, QString::fromUtf8("Linuxtrack"),
+    QMessageBox::warning(nullptr, QString::fromUtf8("Linuxtrack"),
                          QString::fromUtf8("Please specify the Model name!"),
                          QMessageBox::Ok);
     ui.ModelName->setFocus();
@@ -57,7 +57,7 @@ void ModelCreate::on_CreateButton_pressed() {
   }
   if (sectionList.contains(sec, Qt::CaseInsensitive)) {
     QMessageBox::warning(
-        NULL, QString::fromUtf8("Linuxtrack"),
+        nullptr, QString::fromUtf8("Linuxtrack"),
         QString::fromUtf8(
             "The name is already taken, please change the Model name!"),
         QMessageBox::Ok);
@@ -79,17 +79,17 @@ void ModelCreate::on_CreateButton_pressed() {
 }
 
 void ModelCreate::removeEditor() {
-  if (modelEditor != NULL) {
+  if (modelEditor != nullptr) {
     ui.MdlLayout->removeWidget(modelEditor);
     delete modelEditor;
-    modelEditor = NULL;
+    modelEditor = nullptr;
   }
 }
 
 void ModelCreate::activateEditor(QWidget *editor) {
   removeEditor();
   modelEditor = editor;
-  if (modelEditor != NULL) {
+  if (modelEditor != nullptr) {
     ui.MdlLayout->addWidget(modelEditor);
     QObject::connect(this, SIGNAL(dump(const QString &)), modelEditor,
                      SLOT(dump(const QString &)));
@@ -109,7 +109,7 @@ void ModelCreate::on_ModelTypeCombo_currentIndexChanged(int index) {
     activateEditor(new SingleEdit(this));
     break;
   default:
-    activateEditor(NULL);
+    activateEditor(nullptr);
     break;
   }
 }
@@ -122,10 +122,8 @@ ModelEdit::ModelEdit(Guardian *grd, QWidget *parent)
   QObject::connect(mcw, SIGNAL(ModelCreated(const QString &)), this,
                    SLOT(ModelCreated(const QString &)));
   refresh();
-#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
   connect(ui.ModelSelector, &QComboBox::textActivated, this,
-          &ModelEdit::on_ModelSelector_activated);
-#endif
+          &ModelEdit::modelSelectorActivated);
 }
 
 void ModelEdit::refresh() {
@@ -135,7 +133,7 @@ void ModelEdit::refresh() {
   if (PREF.getActiveModel(str)) {
     currentSection = str;
     ModelCreated(str);
-    on_ModelSelector_activated(str);
+    modelSelectorActivated(str);
   } else {
     ModelCreated(QString::fromUtf8(""));
   }
@@ -157,14 +155,14 @@ void ModelEdit::ModelCreated(const QString &section) {
     i = list.indexOf(section);
     if (i != -1) {
       ui.ModelSelector->setCurrentIndex(i);
-      on_ModelSelector_activated(section);
+      modelSelectorActivated(section);
     } else {
       ui.ModelSelector->setCurrentIndex(-1);
     }
   }
 }
 
-void ModelEdit::on_ModelSelector_activated(const QString &text) {
+void ModelEdit::modelSelectorActivated(const QString &text) {
   if (text.isEmpty()) {
     ui.ModelPreview->clear();
     return;
@@ -176,10 +174,10 @@ void ModelEdit::on_ModelSelector_activated(const QString &text) {
     return;
   }
   QString val;
-  if (modelTweaker != NULL) {
+  if (modelTweaker != nullptr) {
     ui.ModelEditorSite->removeWidget(modelTweaker);
     delete modelTweaker;
-    modelTweaker = NULL;
+    modelTweaker = nullptr;
   }
   if (type.compare(QString::fromUtf8("Cap"), Qt::CaseInsensitive) == 0) {
     // ui.ModelTypeLabel->setText("3 Point Cap");
@@ -209,21 +207,21 @@ void ModelEdit::on_ModelSelector_activated(const QString &text) {
     // ui.ModelTypeLabel->setText("Face");
     ui.ModelPreview->setPixmap(QPixmap(QString::fromUtf8(":/ltr/face.png")));
     modelType = MDL_FACE;
-    modelTweaker = NULL;
+    modelTweaker = nullptr;
   } else if (type.compare(QString::fromUtf8("Absolute"), Qt::CaseInsensitive) ==
              0) {
     // ui.ModelTypeLabel->setText("Absolute");
     ui.ModelPreview->setPixmap(QPixmap(QString::fromUtf8(":/ltr/face.png")));
     modelType = MDL_ABSOLUTE;
-    modelTweaker = NULL;
+    modelTweaker = nullptr;
   } else if (type.compare(QString::fromUtf8("SinglePoint"),
                           Qt::CaseInsensitive) == 0) {
     // ui.ModelTypeLabel->setText("1 Point");
     ui.ModelPreview->setPixmap(QPixmap(QString::fromUtf8(":/ltr/single.png")));
     modelType = MDL_1PT;
-    modelTweaker = NULL;
+    modelTweaker = nullptr;
   }
-  if (modelTweaker != NULL) {
+  if (modelTweaker != nullptr) {
     ui.ModelEditorSite->insertWidget(2, modelTweaker);
   }
   if (!initializing)
@@ -233,13 +231,13 @@ void ModelEdit::on_ModelSelector_activated(const QString &text) {
 }
 
 ModelEdit::~ModelEdit() {
-  if (mcw != NULL) {
+  if (mcw != nullptr) {
     delete mcw;
   }
-  if (modelTweaker != NULL) {
+  if (modelTweaker != nullptr) {
     ui.ModelEditorSite->removeWidget(modelTweaker);
     delete modelTweaker;
-    modelTweaker = NULL;
+    modelTweaker = nullptr;
   }
 }
 

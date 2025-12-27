@@ -9,7 +9,7 @@ const float timeFast = 0.1;
 const float timeSlow = 4;
 
 
-MickeyCurveShow::MickeyCurveShow(QWidget *parent) : QWidget(parent), img(NULL)
+MickeyCurveShow::MickeyCurveShow(QWidget *parent) : QWidget(parent), img(nullptr)
 {
   //setBackgroundRole(QPalette::Base);
   setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
@@ -20,8 +20,8 @@ MickeyCurveShow::MickeyCurveShow(QWidget *parent) : QWidget(parent), img(NULL)
 void MickeyCurveShow::updatePixmap(QPointF curPoints[], QPointF newPoints[], int pointCount)
 {
   float s = ((width() > height()) ? height() : width()) - 1;
-  if((img == NULL) || (img->width() != s)){
-    if(img != NULL){
+  if((img == nullptr) || (img->width() != s)){
+    if(img != nullptr){
       delete img;
     }
     img = new QPixmap(s, s);
@@ -51,7 +51,7 @@ void MickeyCurveShow::paintEvent(QPaintEvent * /* event */)
 
 
 
-MickeysAxis::MickeysAxis(): curveShow(NULL)
+MickeysAxis::MickeysAxis(): curveShow(nullptr)
 {
   curveShow = new MickeyCurveShow();
   GUI.getAxisViewLayout()->addWidget(curveShow);
@@ -77,7 +77,7 @@ float MickeysAxis::getSpeed(int sens)
 
 float MickeysAxis::response(float mag, setup_t *s)
 {
-  if(s == NULL){
+  if(s == nullptr){
     s = &setup;
   }
   //deadzone 0 - 50% of the maxValue
@@ -134,7 +134,7 @@ void MickeysAxis::updatePixmap()
     cPoints[i] = QPointF(x, response(x, &setup));
     nPoints[i] = QPointF(x, response(x, &newSetup));
   }
-  if(curveShow != NULL){
+  if(curveShow != nullptr){
     curveShow->updatePixmap(cPoints, nPoints, pointCount);
   }
 }

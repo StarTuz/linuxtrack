@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
-#include <ipc_utils.h>
+#include "ipc_utils.h"
 
 typedef enum {STOP, SLEEP, WAKEUP} command_t;
 

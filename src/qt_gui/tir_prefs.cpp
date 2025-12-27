@@ -15,18 +15,18 @@ bool TirPrefs::firmwareOK = false;
 bool TirPrefs::permsOK = false;
 
 typedef int (*probe_tir_fun_t)(bool *have_firmware, bool *have_permissions);
-static probe_tir_fun_t probe_tir_fun = NULL;
+static probe_tir_fun_t probe_tir_fun = nullptr;
 static lib_fun_def_t functions[] = {
   {(char *)"ltr_int_tir_found", (void*) &probe_tir_fun},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 
 static int probeTir(bool &fwOK, bool &permOK)
 {
-  void *libhandle = NULL;
+  void *libhandle = nullptr;
   int res = 0;
-  if((libhandle = ltr_int_load_library((char *)"libtir", functions)) != NULL){
+  if((libhandle = ltr_int_load_library((char *)"libtir", functions)) != nullptr){
     res = probe_tir_fun(&fwOK, &permOK);
     ltr_int_unload_library(libhandle, functions);
   }
@@ -53,7 +53,7 @@ void TirPrefs::Connect()
 }
 */
 
-TirPrefs::TirPrefs(const QString &dev_id, QWidget *parent) : QWidget(parent), id(dev_id), dlfw(NULL)
+TirPrefs::TirPrefs(const QString &dev_id, QWidget *parent) : QWidget(parent), id(dev_id), dlfw(nullptr)
 {
   ui.setupUi(this);
   //Connect();
@@ -63,7 +63,7 @@ TirPrefs::TirPrefs(const QString &dev_id, QWidget *parent) : QWidget(parent), id
 TirPrefs::~TirPrefs()
 {
   //std::cout<<"Destructing tirprefs!\n";
-  if(dlfw != NULL){
+  if(dlfw != nullptr){
     //std::cout<<"Closing dlfw!\n";
     dlfw->close();
     delete dlfw;
@@ -121,7 +121,7 @@ bool TirPrefs::Activate(const QString &ID, bool init)
     //ui.TirInstallFirmware->setDisabled(true);
   }else{
     ui.TirFwLabel->setText(QString::fromUtf8("Firmware not found - TrackIr will not work!"));
-    QMessageBox::warning(NULL, QString::fromUtf8("TrackIR Firmware Installation"),
+    QMessageBox::warning(nullptr, QString::fromUtf8("TrackIR Firmware Installation"),
         QString::fromUtf8("TrackIR device was found, but you don't have the firmware installed."));
     //on_TirInstallFirmware_pressed();
   }
@@ -165,7 +165,7 @@ bool TirPrefs::AddAvailableDevices(QComboBox &combo)
 
   tirType = probeTir(firmwareOK, permsOK);
   if(!permsOK){
-    QMessageBox::warning(NULL, QString::fromUtf8("TrackIR permissions problem"),
+    QMessageBox::warning(nullptr, QString::fromUtf8("TrackIR permissions problem"),
         QString::fromUtf8("TrackIR device was found, but you don't have permissions to access it.\n \
 Please install the file 99-TIR.rules to the udev rules directory\n\
 (consult help and your distro documentation for details).\n\
@@ -246,7 +246,7 @@ void TirPrefs::TirFirmwareDLFinished(bool state)
 
 void TirPrefs::on_TirInstallFirmware_pressed()
 {
-  if(dlfw == NULL){
+  if(dlfw == nullptr){
     dlfw = new TirFwExtractor(this);
     QObject::connect(dlfw, SIGNAL(finished(bool)),
       this, SLOT(TirFirmwareDLFinished(bool)));

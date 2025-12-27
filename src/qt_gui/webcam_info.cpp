@@ -19,15 +19,15 @@ typedef int (*enum_webcam_formats_fun_t)(const char *id,
                                          webcam_formats *all_formats);
 typedef int (*enum_webcam_formats_cleanup_fun_t)(webcam_formats *all_formats);
 
-static enum_webcams_fun_t enum_webcams_fun = NULL;
-static enum_webcam_formats_fun_t enum_webcam_formats_fun = NULL;
-static enum_webcam_formats_cleanup_fun_t enum_webcam_formats_cleanup_fun = NULL;
+static enum_webcams_fun_t enum_webcams_fun = nullptr;
+static enum_webcam_formats_fun_t enum_webcam_formats_fun = nullptr;
+static enum_webcam_formats_cleanup_fun_t enum_webcam_formats_cleanup_fun = nullptr;
 static lib_fun_def_t functions[] = {
     {(char *)"ltr_int_enum_webcams", (void *)&enum_webcams_fun},
     {(char *)"ltr_int_enum_webcam_formats", (void *)&enum_webcam_formats_fun},
     {(char *)"ltr_int_enum_webcam_formats_cleanup",
      (void *)&enum_webcam_formats_cleanup_fun},
-    {NULL, NULL}};
+    {nullptr, nullptr}};
 
 /*
  * Bastardized version of singleton pattern to take care of library
@@ -47,7 +47,7 @@ WebcamLibProxy WebcamLibProxy::wcl;
 bool webcamInfoOk = false;
 
 WebcamLibProxy::WebcamLibProxy() {
-  if ((libhandle = ltr_int_load_library((char *)"libwc", functions)) != NULL) {
+  if ((libhandle = ltr_int_load_library((char *)"libwc", functions)) != nullptr) {
     webcamInfoOk = true;
   }
 }
@@ -56,7 +56,7 @@ WebcamLibProxy::~WebcamLibProxy() {
   if (webcamInfoOk) {
     ltr_int_unload_library(libhandle, functions);
   }
-  libhandle = NULL;
+  libhandle = nullptr;
 }
 
 static webcam_format def_fmt1 = {0, *"YUYV", 160, 120, 1, 30};
@@ -253,12 +253,12 @@ QStringList &WebcamInfo::EnumerateWebcams() {
   if (!webcamInfoOk) {
     return *res;
   }
-  char **ids = NULL;
+  char **ids = nullptr;
 
   if (enum_webcams_fun(&ids) > 0) {
     int id_num = 0;
 
-    while ((ids[id_num]) != NULL) {
+    while ((ids[id_num]) != nullptr) {
       res->append(QString::fromUtf8(ids[id_num]));
       ++id_num;
     }

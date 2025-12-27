@@ -16,7 +16,7 @@ Reporting problems to user.
 static shortcutHash_t shortcutHash;
 static bool errorEncountered;
 static QString errMsg;
-static Display *display = NULL;
+static Display *display = nullptr;
 static Window window;
 
 static bool grabKeyX(Display *display, Window &window, KeyCode code,
@@ -26,7 +26,7 @@ static bool ungrabKeyX(Display *display, Window &window, KeyCode code,
 
 #if defined(QT5_OVERRIDES) || defined(QT6_OVERRIDES)
 
-static hotKeyFilter *hkFilter = NULL;
+static hotKeyFilter *hkFilter = nullptr;
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 bool hotKeyFilter::nativeEventFilter(const QByteArray &eventType, void *message,
@@ -39,7 +39,7 @@ bool hotKeyFilter::nativeEventFilter(const QByteArray &eventType, void *message,
   Q_UNUSED(result);
   if (eventType == "xcb_generic_event_t") {
     xcb_generic_event_t *ev = static_cast<xcb_generic_event_t *>(message);
-    xcb_key_press_event_t *keyEvent = NULL;
+    xcb_key_press_event_t *keyEvent = nullptr;
     unsigned int keyCode = 0;
     unsigned int modifiers = 0;
     // 127 is mask allowing to process events regardless of their source
@@ -75,7 +75,7 @@ bool hotKeyFilter::nativeEventFilter(const QByteArray &eventType, void *message,
 
 #else // QT < 5.0 (Qt4)
 
-static QAbstractEventDispatcher::EventFilter prevFilter = NULL;
+static QAbstractEventDispatcher::EventFilter prevFilter = nullptr;
 
 static bool eventFilter(void *message) {
   XEvent *event = (XEvent *)message;
@@ -91,7 +91,7 @@ static bool eventFilter(void *message) {
       return true;
     }
   }
-  if (prevFilter != NULL) {
+  if (prevFilter != nullptr) {
     return prevFilter(message);
   }
   return false;
@@ -103,7 +103,7 @@ static void installFilter() {
   hkFilter = new hotKeyFilter();
   QAbstractEventDispatcher::instance()->installNativeEventFilter(hkFilter);
 #else
-  if (prevFilter == NULL) {
+  if (prevFilter == nullptr) {
     prevFilter =
         QAbstractEventDispatcher::instance()->setEventFilter(eventFilter);
     // printf("Handler installed!\n");
@@ -115,9 +115,9 @@ static void uninstallFilter() {
 #if defined(QT5_OVERRIDES) || defined(QT6_OVERRIDES)
   QAbstractEventDispatcher::instance()->removeNativeEventFilter(hkFilter);
   delete hkFilter;
-  hkFilter = NULL;
+  hkFilter = nullptr;
 #else
-  if (prevFilter != NULL) {
+  if (prevFilter != nullptr) {
     QAbstractEventDispatcher::instance()->setEventFilter(prevFilter);
     // printf("Handler removed!\n");
   }
@@ -156,13 +156,13 @@ static unsigned int getModifiers(int key) {
   return modifiers;
 }
 
-static bool removeIdFromHash(shortcut *shortcutId, keyPair_t *kp = NULL) {
+static bool removeIdFromHash(shortcut *shortcutId, keyPair_t *kp = nullptr) {
   bool res = false;
   shortcutHash_t::iterator i;
   for (i = shortcutHash.begin(); i != shortcutHash.end(); /* empty */) {
     if (i->second == shortcutId) {
       // printf("Removing id %p\n", shortcutId);
-      if (kp != NULL) {
+      if (kp != nullptr) {
         *kp = i->first;
       }
       shortcutHash.erase(i++);
@@ -192,11 +192,11 @@ static bool translateSequence(const QKeySequence &s, KeyCode &code,
 }
 
 bool setShortCut(const QKeySequence &s, shortcut *shortcutId) {
-  if (display == NULL) {
+  if (display == nullptr) {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
     // Qt6 removed QX11Info, use native X11 display
-    display = XOpenDisplay(NULL);
-    if (display == NULL) {
+    display = XOpenDisplay(nullptr);
+    if (display == nullptr) {
       return false;
     }
     window = DefaultRootWindow(display);

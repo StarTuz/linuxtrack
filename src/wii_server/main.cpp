@@ -1,6 +1,6 @@
 #include <QApplication>
 #include <QLocale>
-#include <utils.h>
+#include "utils.h"
 #include <locale.h>
 #include <stdlib.h>
 

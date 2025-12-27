@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <unistd.h>
-#include <ipc_utils.h>
+#include "ipc_utils.h"
 #include <ltr_srv_comm.h>
 
 int main(int argc, char *argv[]){

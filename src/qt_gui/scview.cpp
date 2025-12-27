@@ -6,7 +6,7 @@
 #include "tracker.h"
 
 SCView::SCView(axis_t a, QWidget *parent)
-  : QWidget(parent), parentWidget(parent), px(0.0), axis(a), timer(NULL), invert(false)
+  : QWidget(parent), parentWidget(parent), px(0.0), axis(a), timer(nullptr), invert(false)
 {
   setBackgroundRole(QPalette::Base);
   setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);

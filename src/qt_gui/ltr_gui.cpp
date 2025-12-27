@@ -1,7 +1,7 @@
 #define NEWS_SERIAL 2
 
 #ifdef HAVE_CONFIG_H
-#include "../../config.h"
+#include "config.h"
 #endif
 
 #include "ltr_gui.h"

@@ -4,7 +4,7 @@
 #include "ui_ltr_gui.h"
 #include "ui_ltr.h"
 #include <linuxtrack.h>
-#include <cal.h>
+#include "cal.h"
 #include <QThread>
 #include <QCloseEvent>
 #include <QGraphicsScene>

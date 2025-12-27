@@ -1,0 +1,58 @@
+# Linuxtrack Unit Tests Makefile
+# Uses Catch2 v3 (amalgamated)
+
+CXX = g++
+CXXFLAGS = -std=c++17 -g -O0 -Wall -Wextra -I. -I..
+
+# Source files
+CATCH2_SRC = catch2/catch_amalgamated.cpp
+MODERN_PREFS_SRC = ../modern_prefs.cpp
+
+# Test files
+TEST_SOURCES = test_modern_prefs.cpp
+
+# Object files
+CATCH2_OBJ = catch2/catch_amalgamated.o
+MODERN_PREFS_OBJ = modern_prefs.o
+TEST_OBJS = $(TEST_SOURCES:.cpp=.o)
+
+# Target
+TEST_RUNNER = test_runner
+
+.PHONY: all clean test
+
+all: $(TEST_RUNNER)
+
+# Compile Catch2 (only once, takes a while)
+$(CATCH2_OBJ): catch2/catch_amalgamated.cpp catch2/catch_amalgamated.hpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Compile modern_prefs
+$(MODERN_PREFS_OBJ): $(MODERN_PREFS_SRC) ../modern_prefs.h ../mini_ini.h
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Compile test files
+%.o: %.cpp catch2/catch_amalgamated.hpp
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Link test runner
+$(TEST_RUNNER): $(CATCH2_OBJ) $(MODERN_PREFS_OBJ) $(TEST_OBJS)
+	$(CXX) $(CXXFLAGS) $^ -o $@
+
+# Run tests
+test: $(TEST_RUNNER)
+	./$(TEST_RUNNER) --reporter compact
+
+# Run tests with verbose output
+test-verbose: $(TEST_RUNNER)
+	./$(TEST_RUNNER) --reporter console
+
+clean:
+	rm -f $(CATCH2_OBJ) $(MODERN_PREFS_OBJ) $(TEST_OBJS) $(TEST_RUNNER)
+
+# Watch for changes and re-run tests (requires inotifywait)
+watch:
+	while true; do \
+		$(MAKE) test; \
+		inotifywait -qe modify $(TEST_SOURCES) $(MODERN_PREFS_SRC) 2>/dev/null || sleep 2; \
+	done

@@ -3,27 +3,25 @@
 
 #include "ltr_gui.h"
 
-
-class LtrTracking : public QObject
-{
+class LtrTracking : public QObject {
   Q_OBJECT
- public:
+public:
   LtrTracking(const Ui::LinuxtrackMainForm &ui);
   ~LtrTracking();
   void refresh();
- signals:
+signals:
   void customSectionChanged();
- private slots:
+private slots:
   void axisChanged(int axis, int elem);
-  void on_Profiles_currentIndexChanged(const QString &text);
+  void profilesIndexChanged(int index);
   void on_CreateNewProfile_pressed();
-  
+
   void on_PitchEnable_stateChanged(int state);
   void on_RollEnable_stateChanged(int state);
   void on_YawEnable_stateChanged(int state);
   void on_XEnable_stateChanged(int state);
   void on_YEnable_stateChanged(int state);
-  void on_ZEnable_stateChanged(int state);  
+  void on_ZEnable_stateChanged(int state);
   void on_PitchUpSpin_valueChanged(double d);
   void on_PitchDownSpin_valueChanged(double d);
   void on_YawLeftSpin_valueChanged(double d);
@@ -39,7 +37,8 @@ class LtrTracking : public QObject
   void on_CommonFF_valueChanged(int value);
   void setCommonFF(float val);
   void initAxes();
- private:
+
+private:
   const Ui::LinuxtrackMainForm &gui;
   void Connect();
   void setCommonFFVal(float val);

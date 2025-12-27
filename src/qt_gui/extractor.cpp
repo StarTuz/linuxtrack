@@ -16,7 +16,7 @@
 #include "utils.h"
 
 #ifdef HAVE_CONFIG_H
-#include "../../config.h"
+#include "config.h"
 #endif
 
 static bool linkResult(const QString &destPath) {
@@ -237,7 +237,7 @@ bool Extractor::readSpec() {
 }
 
 Extractor::Extractor(QWidget *parent)
-    : QDialog(parent), dl(NULL), progressDlg(NULL) {
+    : QDialog(parent), dl(nullptr), progressDlg(nullptr) {
   ui.setupUi(this);
   wine = new WineLauncher();
   dl = new Downloading();
@@ -245,7 +245,7 @@ Extractor::Extractor(QWidget *parent)
   enableButtons(true);
 }
 
-TirFwExtractor::TirFwExtractor(QWidget *parent) : Extractor(parent), et(NULL) {
+TirFwExtractor::TirFwExtractor(QWidget *parent) : Extractor(parent), et(nullptr) {
   et = new TirFwExtractThread();
   QObject::connect(et, SIGNAL(progress(const QString &)), this,
                    SLOT(progress(const QString &)));
@@ -273,7 +273,7 @@ TirFwExtractor::TirFwExtractor(QWidget *parent) : Extractor(parent), et(NULL) {
 }
 
 Mfc42uExtractor::Mfc42uExtractor(QWidget *parent)
-    : Extractor(parent), cabextract(NULL) {
+    : Extractor(parent), cabextract(nullptr) {
   cabextract = new QProcess(this);
   QObject::connect(cabextract, SIGNAL(finished(int, QProcess::ExitStatus)),
                    this, SLOT(cabextractFinished(int, QProcess::ExitStatus)));
@@ -307,7 +307,7 @@ TirFwExtractor::~TirFwExtractor() {
     }
   }
   delete et;
-  et = NULL;
+  et = nullptr;
 }
 
 Mfc42uExtractor::~Mfc42uExtractor() {}
@@ -531,7 +531,7 @@ void Extractor::on_BrowseInstaller_pressed() {
   QString tempDir = QDir::tempPath() + QString::fromUtf8("/ltr_extract_XXXXXX");
   QByteArray charData = tempDir.toUtf8();
   char *prefix = mkdtemp(charData.data());
-  if (prefix != NULL) {
+  if (prefix != nullptr) {
     tempDir = QString::fromUtf8(prefix);
     progress(QString::fromUtf8("Attempting native extraction of %1 to %2...")
                  .arg(file, tempDir));
@@ -558,7 +558,7 @@ void Extractor::on_BrowseInstaller_pressed() {
   winePrefix += QString::fromUtf8("/wineXXXXXX");
   charData = winePrefix.toUtf8();
   prefix = mkdtemp(charData.data());
-  if (prefix == NULL) {
+  if (prefix == nullptr) {
     enableButtons(true);
     return;
   }
@@ -631,7 +631,7 @@ void TirFwExtractor::threadFinished() {
     linkResult(destPath);
   } else {
     QMessageBox::warning(
-        NULL, QString::fromUtf8("Firmware extraction unsuccessfull"),
+        nullptr, QString::fromUtf8("Firmware extraction unsuccessfull"),
         QString::fromUtf8(
             "Some of the files needed to fully utilize TrackIR were not "
             "found! Please see the log for more details."));
@@ -681,7 +681,7 @@ void Extractor::on_DownloadButton_pressed() {
   winePrefix += QString::fromUtf8("/wineXXXXXX");
   QByteArray charData = winePrefix.toUtf8();
   char *prefix = mkdtemp(charData.data());
-  if (prefix == NULL) {
+  if (prefix == nullptr) {
     return;
   }
   enableButtons(false);
@@ -699,7 +699,7 @@ void Extractor::downloadDone(bool ok, QString fileName) {
     commenceExtraction(fileName);
   } else {
     QMessageBox::warning(
-        NULL, QString::fromUtf8("Download unsuccessfull"),
+        nullptr, QString::fromUtf8("Download unsuccessfull"),
         QString::fromUtf8(
             "Download of the file was unsuccessful.\n"
             "Please check your network connection and try again;\n"

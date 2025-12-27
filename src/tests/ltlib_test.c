@@ -5,7 +5,7 @@
 #include <unistd.h>
 #include <assert.h>
 #include <linuxtrack.h>
-#include <utils.h>
+#include "utils.h"
 #include <pthread.h>
 
 bool quit_flag = false;

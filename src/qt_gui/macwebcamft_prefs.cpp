@@ -6,7 +6,7 @@
 #include "macwebcam_info.h"
 #include "ltr_gui_prefs.h"
 #include "wc_driver_prefs.h"
-#include <utils.h>
+#include "utils.h"
 
 static QString currentId = QString::fromUtf8("None");
 
@@ -40,7 +40,7 @@ MacWebcamFtPrefs::~MacWebcamFtPrefs()
   ltr_int_wc_close_prefs();
 }
 
-static MacWebcamInfo *wc_info = NULL;
+static MacWebcamInfo *wc_info = nullptr;
 
 void MacWebcamFtPrefs::on_WebcamFtResolutionsMac_activated(int index)
 {
@@ -86,7 +86,7 @@ bool MacWebcamFtPrefs::Activate(const QString &ID, bool init)
   currentId = ID;
   ui.WebcamFtResolutionsMac->clear();
   if((currentId != QString::fromUtf8("None")) && (currentId.size() != 0)){
-    if(wc_info != NULL){
+    if(wc_info != nullptr){
       delete(wc_info);
     }
     wc_info = new MacWebcamInfo(currentId);
@@ -101,7 +101,7 @@ bool MacWebcamFtPrefs::Activate(const QString &ID, bool init)
     on_WebcamFtResolutionsMac_activated(res_index);
     const char *cascade = ltr_int_wc_get_cascade();
     QString cascadePath;
-    if((cascade == NULL) || (!QFile::exists(QString::fromUtf8(cascade)))){
+    if((cascade == nullptr) || (!QFile::exists(QString::fromUtf8(cascade)))){
       cascadePath = PrefProxy::getDataPath(
                       QString::fromUtf8("/haarcascades/haarcascade_frontalface_alt2.xml"));
       ltr_int_wc_set_cascade(cascadePath.toUtf8().constData());
@@ -156,7 +156,7 @@ void MacWebcamFtPrefs::on_FindCascadeMac_pressed()
     QDir tmp(path);
     path = tmp.filePath(path);
   }
-  QString fileName = QFileDialog::getOpenFileName(NULL,
+  QString fileName = QFileDialog::getOpenFileName(nullptr,
      QString::fromUtf8("Find Harr/LBP cascade"), path, QString::fromUtf8("xml Files (*.xml)"));
   ui.CascadePathMac->setText(fileName);
   on_CascadePathMac_editingFinished();

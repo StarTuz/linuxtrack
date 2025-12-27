@@ -2,7 +2,7 @@
 #include <QTemporaryFile>
 #include <QStringList>
 
-Downloading::Downloading(): file(NULL), reply(NULL), busy(false) 
+Downloading::Downloading(): file(nullptr), reply(nullptr), busy(false) 
 {
   mgr = new QNetworkAccessManager(this);
   connect(mgr, SIGNAL(finished(QNetworkReply*)), 
@@ -14,7 +14,7 @@ Downloading::~Downloading()
   if(file && file->isOpen()){
     file->close();
   }
-  if(reply != NULL){
+  if(reply != nullptr){
     delete reply;
   }
   delete mgr;

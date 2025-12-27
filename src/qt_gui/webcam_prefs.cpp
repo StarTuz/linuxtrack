@@ -21,7 +21,7 @@ WebcamPrefs::~WebcamPrefs()
 }
 
 
-static WebcamInfo *wc_info = NULL;
+static WebcamInfo *wc_info = nullptr;
 
 void WebcamPrefs::on_WebcamFormats_activated(int index)
 {
@@ -97,7 +97,7 @@ bool WebcamPrefs::Activate(const QString &ID, bool init)
   ui.WebcamFormats->clear();
   ui.WebcamResolutions->clear();
   if((currentId != QString::fromUtf8("None")) && (currentId.size() != 0)){
-    if(wc_info != NULL){
+    if(wc_info != nullptr){
       delete(wc_info);
     }
     wc_info = new WebcamInfo(currentId);
@@ -107,7 +107,7 @@ bool WebcamPrefs::Activate(const QString &ID, bool init)
     int fmt_index = 0;
     const char *tmp = ltr_int_wc_get_pixfmt();
     //std::cout<<"4CC: "<<tmp<<"\n";
-    if(tmp != NULL){
+    if(tmp != nullptr){
       fourcc = QString::fromUtf8(tmp);
       fmt_index = wc_info->findFourcc(fourcc);
       ui.WebcamFormats->setCurrentIndex(fmt_index);
