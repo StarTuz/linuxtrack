@@ -82,18 +82,21 @@ fi
 
 # Run linuxdeploy
 # --appdir: target AppDir
+# --plugin qt: use Qt plugin to bundle Qt libs and plugins
 # --output appimage: create the actual file
 # Note: we use LD_LIBRARY_PATH to help linuxdeploy find our internal libraries
-# We do NOT use --plugin qt because bundling Qt can cause ABI incompatibilities
-# on systems with newer Qt versions. The AppImage will use system Qt instead.
 export LD_LIBRARY_PATH="$(pwd)/$APP_DIR/usr/lib:$(pwd)/$APP_DIR/usr/lib/linuxtrack:$LD_LIBRARY_PATH"
 
 # We must set ARCH because we bundle both 32-bit and 64-bit libraries
 export ARCH=x86_64
 
+# Set Qt environment for proper plugin discovery
+export EXTRA_QT_PLUGINS="platformthemes/libqgtk3.so;iconengines"
+
 "$LINUXDEPLOY" --appdir "$APP_DIR" \
     --desktop-file "$APP_DIR/usr/share/applications/$APP_NAME.desktop" \
     --icon-file "$APP_DIR/usr/share/pixmaps/$APP_NAME.svg" \
+    --plugin qt \
     --output appimage
 
 echo "--> Done! AppImage created."
